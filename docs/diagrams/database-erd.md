@@ -1,4 +1,4 @@
-# 3️⃣ ER Diagram — MVP Data Model  
+# ER Diagram — MVP Data Model  
 
 
 # MVP Database ER Diagram
