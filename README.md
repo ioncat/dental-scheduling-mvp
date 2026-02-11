@@ -61,9 +61,8 @@ All documentation lives in the `/docs` folder.
 ---
 ## Product Lifecycle Overview
 
-For a structured view of how this case moves from Discovery to MVP, Delivery, and System Design, see:
-
-👉 `product-lifecycle-map.md`
+For a structured view of how this case moves from Discovery to MVP, Delivery, and System Design, see:  
+👉 [product-lifecycle-map.md](product-lifecycle-map.md)
 
 ---
 
