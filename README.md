@@ -94,6 +94,13 @@ Explicitly excluded:
 
 ---
 
+
+## Product Decisions
+
+Key MVP decisions are documented in `/docs/decisions`.
+
+---
+
 ## Status
 
 MVP documentation complete.  
