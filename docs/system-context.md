@@ -1,6 +1,4 @@
-# System Context
-
-## 1. System Context (Logical View)
+## System Context (Logical View)
 
 The MVP system consists of a single core application with clearly separated user roles.
 

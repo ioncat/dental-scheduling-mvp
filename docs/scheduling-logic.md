@@ -1,6 +1,4 @@
-#Scheduling Logic
-
-## 2. Scheduling Logic Rules
+## Scheduling Logic Rules
 
 This table defines the core business rules governing appointments and availability.
 

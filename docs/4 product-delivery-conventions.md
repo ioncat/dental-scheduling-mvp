@@ -33,11 +33,11 @@ Every User Story must follow the structure below.
 Short, descriptive title reflecting user value.
 
 ### User Story
-
-As a `<user role>`{=html}\
-I want `<capability>`{=html}\
-So that `<business value>`{=html}
-
+```
+As a `<user role>`
+I want `<capability>`
+So that `<business value>`
+```
 ### Acceptance Criteria
 
 Written in Given / When / Then format and describing observable
@@ -67,29 +67,29 @@ Signals required for validation.
 
 ## 3. Definition of Ready
 
--   Story statement complete\
--   Acceptance Criteria defined\
--   Edge Cases listed\
--   Out of Scope explicit\
--   Notes for Engineering present\
+-   Story statement complete
+-   Acceptance Criteria defined
+-   Edge Cases listed
+-   Out of Scope explicit
+-   Notes for Engineering present
 -   No open questions
 
 ------------------------------------------------------------------------
 
 ## 4. Definition of Done
 
--   Acceptance Criteria met\
--   Edge Cases handled\
--   QA verification complete\
+-   Acceptance Criteria met
+-   Edge Cases handled
+-   QA verification complete
 -   PO accepts
 
 ------------------------------------------------------------------------
 
 ## 5. Responsibility Model (Delivery RACI)
 
--   Accountable: Product Owner\
--   Responsible: Engineering\
--   Consulted: QA, UX, Tech Lead\
+-   Accountable: Product Owner
+-   Responsible: Engineering
+-   Consulted: QA, UX, Tech Lead
 -   Informed: Stakeholders
 
 RACI applies at Epic level.
@@ -98,6 +98,6 @@ RACI applies at Epic level.
 
 ## 6. What This Document Is NOT
 
--   Technical specification\
--   Architecture document\
+-   Technical specification
+-   Architecture document
 -   Substitute for communication
