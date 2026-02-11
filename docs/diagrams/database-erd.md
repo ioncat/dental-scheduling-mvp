@@ -1,7 +1,6 @@
 # 3️⃣ ER Diagram — MVP Data Model  
-`docs/diagrams/database-erd.md`
 
-```md
+
 # MVP Database ER Diagram
 
 This diagram represents the logical data model for the MVP.
