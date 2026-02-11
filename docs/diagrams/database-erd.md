@@ -1,6 +1,3 @@
-# 3️⃣ ER Diagram — MVP Data Model  
-
-
 # MVP Database ER Diagram
 
 This diagram represents the logical data model for the MVP.
