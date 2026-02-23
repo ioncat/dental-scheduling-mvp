@@ -1,17 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { getCurrentStaff } from '../lib/auth'
+import { getCurrentStaff } from '@/lib/auth'
+import type { Staff, StaffRole } from '@/lib/database.types'
 
-export type StaffRole = 'admin' | 'doctor' | 'clinic_manager'
-
-export interface Staff {
-  id: string
-  practice_id: string
-  full_name: string
-  email: string
-  phone_number: string | null
-  role: StaffRole
-  status: 'pending' | 'active' | 'inactive'
-}
+export type { Staff, StaffRole }
 
 export function useCurrentStaff() {
   const { data: staff, isLoading, error } = useQuery({
