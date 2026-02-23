@@ -123,3 +123,31 @@ Then new permissions apply immediately
 
 ### Notes for Engineering
 - Enforce at least one admin exists
+
+---
+
+## Story 3.6 — Edit Staff Profile (Backlog)
+
+### User Story
+As an Admin or Clinic Manager
+I want to edit a staff member's profile (name, phone, email, messenger)
+So that I can keep staff records accurate.
+
+### Acceptance Criteria
+Given I am admin or clinic_manager
+When I open a staff member's row in the Staff table
+Then I can edit full_name, phone_number, email, messenger_type, messenger_id
+
+Given I save changes
+Then the staff record is updated
+And I see a success confirmation
+
+### Edge Cases
+- Changing email to one already in use (unique constraint violation)
+- Admin editing their own profile (allowed)
+- Clinic Manager editing admin's profile (should be blocked — admin-only)
+
+### Notes for Engineering
+- Add edit mode to StaffTable rows or open a modal with staff details
+- RLS: admin can update any staff; clinic_manager can update non-admin staff
+- Consider reusing the InviteStaffModal layout for edit mode

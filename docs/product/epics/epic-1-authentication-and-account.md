@@ -118,11 +118,11 @@ Then all fields are read-only
 - Messenger fields empty
 
 ### Out of Scope
-- Editing profile fields
 - Password management
 
 ### Notes for Engineering
 - Data sourced from Staff table
+- See Story 1.5 for self-edit of contact details
 
 ---
 
@@ -166,6 +166,64 @@ And shows "Access denied. Contact your administrator."
 - Google Cloud Console project with OAuth configured
 - Supabase Auth Google provider enabled
 - `practice.google_auth_enabled` column in schema
+
+---
+
+## Story 1.5 — Edit Own Contact Details (Backlog)
+
+### User Story
+As a Staff member
+I want to edit my phone number, email, and messenger details on the Account page
+So that my contact information stays up to date.
+
+### Acceptance Criteria
+Given I am on the Account page
+When I click "Edit"
+Then phone_number, contact_email, messenger_type, messenger_id become editable
+And full_name and role remain read-only
+
+Given I save changes
+Then the staff record is updated
+And I see a success confirmation
+
+### Edge Cases
+- Email changed to one already used by another staff member (unique constraint)
+- Empty phone number (allowed — nullable field)
+
+### Notes for Engineering
+- Reuse inline edit pattern from PatientInfoCard
+- RLS: staff can update own record (`id = auth.uid()`)
+- full_name is NOT editable by the user (only admin can change it)
+
+---
+
+## Story 1.6 — Bug: Staff Profile Not Found for New Users (Backlog)
+
+### Bug Description
+A newly invited staff member (doctor) who signs in via magic link sees
+"Staff profile not found" on the Account page.
+
+### Root Cause (Suspected)
+The `link_staff_on_first_login()` trigger fires on `auth.users INSERT` and sets
+`staff.id = auth.uid()`. If the timing is off, or the trigger fails silently,
+`useCurrentStaff()` queries `staff` by `auth.uid()` and finds no match.
+
+### Steps to Reproduce
+1. Admin invites a new doctor via Settings → Staff → Invite
+2. Doctor clicks magic link in email
+3. Doctor lands on /schedule → navigates to /account
+4. Error: "Staff profile not found"
+
+### Expected Behavior
+Account page shows the staff member's profile (name, email, role, status).
+
+### Notes for Engineering
+- Verify `link_staff_on_first_login()` trigger is correctly updating `staff.id`
+- Check if `signInWithOtp` with `shouldCreateUser: true` creates the auth.users
+  record BEFORE the staff record exists (race condition)
+- Consider adding a retry/polling mechanism in `useCurrentStaff` if staff record
+  is not immediately found after first login
+- Add logging to the trigger for debugging
 
 ---
 
