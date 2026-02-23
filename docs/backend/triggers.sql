@@ -1,4 +1,53 @@
 ---------------------------------------------------------
+-- 0a. RPC: is_staff_email (public, callable by anon)
+---------------------------------------------------------
+-- Called by the login form BEFORE sending magic link.
+-- Returns true only if the email belongs to active/pending staff.
+
+create or replace function is_staff_email(check_email text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = 'public'
+as $$
+  select exists (
+    select 1 from staff
+    where email = lower(trim(check_email))
+      and status in ('active', 'pending')
+  )
+$$;
+
+grant execute on function is_staff_email(text) to anon;
+grant execute on function is_staff_email(text) to authenticated;
+
+---------------------------------------------------------
+-- 0b. Trigger: link staff record on first auth sign-in
+---------------------------------------------------------
+-- When a new user is created in auth.users (first magic link),
+-- match by email and update staff.id → auth.uid().
+
+create or replace function link_staff_on_first_login()
+returns trigger
+language plpgsql
+security definer
+set search_path = 'public'
+as $$
+begin
+  update staff
+  set id = new.id
+  where email = lower(trim(new.email))
+    and id != new.id;
+  return new;
+end;
+$$;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row
+  execute function link_staff_on_first_login();
+
+---------------------------------------------------------
 -- 1. Doctor becomes inactive → future appointments unassigned
 ---------------------------------------------------------
 

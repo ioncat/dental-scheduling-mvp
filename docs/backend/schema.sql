@@ -37,6 +37,7 @@ create table staff (
     status staff_status not null default 'pending',
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now(),
+    constraint staff_email_unique unique (email),
     unique (practice_id, email)
 );
 
