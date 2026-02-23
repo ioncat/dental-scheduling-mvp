@@ -115,6 +115,36 @@ export default function LoginPage() {
           <CardDescription>Sign in to continue</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
+          {/* Magic Link */}
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="doctor@clinic.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={state === 'loading'}
+              />
+            </div>
+            {state === 'error' && (
+              <p className="text-sm text-destructive">{errorMsg}</p>
+            )}
+            <Button type="submit" disabled={state === 'loading' || !email.trim()}>
+              {state === 'loading' ? 'Sending...' : 'Send Magic Link'}
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+
           {/* Google Sign-In */}
           <Button
             variant="outline"
@@ -142,36 +172,6 @@ export default function LoginPage() {
             </svg>
             Sign in with Google
           </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
-            </div>
-          </div>
-
-          {/* Magic Link */}
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="doctor@clinic.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={state === 'loading'}
-              />
-            </div>
-            {state === 'error' && (
-              <p className="text-sm text-destructive">{errorMsg}</p>
-            )}
-            <Button type="submit" disabled={state === 'loading' || !email.trim()}>
-              {state === 'loading' ? 'Sending...' : 'Send Magic Link'}
-            </Button>
-          </form>
         </CardContent>
       </Card>
     </div>

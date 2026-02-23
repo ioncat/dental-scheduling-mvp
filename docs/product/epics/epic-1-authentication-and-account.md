@@ -156,10 +156,16 @@ And shows "Access denied. Contact your administrator."
 - Use `supabase.auth.signInWithOAuth({ provider: 'google' })`
 - After OAuth callback, check `is_staff_email()` — if not registered, sign out and show error
 - `link_staff_on_first_login()` trigger handles auth.uid → staff.id linking
+- Google Auth button should appear BELOW the Magic Link form (secondary option)
+- Add `google_auth_enabled` boolean to `practice` table (default: false)
+- Admin can toggle Google Auth on/off in Settings → Practice (PracticeSettingsForm)
+- Login page reads this flag and conditionally shows/hides the Google button
+- Google OAuth may not work on localhost — the toggle lets admins disable it when not configured
 
 ### Dependencies
 - Google Cloud Console project with OAuth configured
 - Supabase Auth Google provider enabled
+- `practice.google_auth_enabled` column in schema
 
 ---
 
