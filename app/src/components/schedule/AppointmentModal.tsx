@@ -113,6 +113,7 @@ export function AppointmentModal({
   }
 
   const canManage = role === 'admin' || role === 'clinic_manager'
+  const isDoctor = role === 'doctor'
   const isTerminal = appointment?.status === 'completed' || appointment?.status === 'cancelled'
 
   return (
@@ -200,9 +201,9 @@ export function AppointmentModal({
               </Button>
             )}
 
-            {mode === 'view' && canManage && !isTerminal && (
+            {mode === 'view' && !isTerminal && (canManage || isDoctor) && (
               <>
-                {appointment?.status === 'unassigned' && (
+                {canManage && appointment?.status === 'unassigned' && (
                   <DoctorSelector
                     value={undefined}
                     onValueChange={handleAssignDoctor}
@@ -214,13 +215,15 @@ export function AppointmentModal({
                     Complete
                   </Button>
                 )}
-                <Button
-                  variant="destructive"
-                  onClick={() => setConfirmCancel(true)}
-                  disabled={updateMutation.isPending}
-                >
-                  Cancel Appointment
-                </Button>
+                {canManage && (
+                  <Button
+                    variant="destructive"
+                    onClick={() => setConfirmCancel(true)}
+                    disabled={updateMutation.isPending}
+                  >
+                    Cancel Appointment
+                  </Button>
+                )}
               </>
             )}
           </DialogFooter>
