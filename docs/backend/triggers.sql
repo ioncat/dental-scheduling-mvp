@@ -1,4 +1,60 @@
 ---------------------------------------------------------
+-- 0. First Launch: bootstrap check + setup
+---------------------------------------------------------
+
+-- Returns true if at least one staff record exists (system is set up)
+create or replace function is_system_bootstrapped()
+returns boolean
+language sql
+stable
+security definer
+set search_path = 'public'
+as $$
+  select exists (select 1 from staff)
+$$;
+
+grant execute on function is_system_bootstrapped() to anon;
+grant execute on function is_system_bootstrapped() to authenticated;
+
+-- Called from /setup page on first launch.
+-- Creates practice + first admin staff record.
+-- Fails if system is already bootstrapped.
+create or replace function bootstrap_practice(
+  p_clinic_name text,
+  p_admin_name text,
+  p_admin_email text,
+  p_time_zone text default 'UTC',
+  p_date_format text default 'DD.MM.YYYY'
+)
+returns json
+language plpgsql
+security definer
+set search_path = 'public'
+as $$
+declare
+  v_practice_id uuid;
+begin
+  -- Guard: only works on empty system
+  if exists (select 1 from staff) then
+    raise exception 'System is already bootstrapped';
+  end if;
+
+  -- Create practice
+  insert into practice (clinic_name, time_zone, date_format)
+  values (p_clinic_name, p_time_zone, p_date_format)
+  returning id into v_practice_id;
+
+  -- Create admin staff
+  insert into staff (practice_id, full_name, email, role, status)
+  values (v_practice_id, p_admin_name, lower(trim(p_admin_email)), 'admin', 'active');
+
+  return json_build_object('practice_id', v_practice_id);
+end;
+$$;
+
+grant execute on function bootstrap_practice(text, text, text, text, text) to anon;
+
+---------------------------------------------------------
 -- 0a. RPC: is_staff_email (public, callable by anon)
 ---------------------------------------------------------
 -- Called by the login form BEFORE sending magic link.

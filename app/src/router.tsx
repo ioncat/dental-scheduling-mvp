@@ -5,8 +5,10 @@ import {
   Outlet,
   redirect,
 } from '@tanstack/react-router'
+import { supabase } from './lib/supabase'
 import { getCurrentUser, getCurrentStaff } from './lib/auth'
 import { AppLayout } from './components/layout/AppLayout'
+import SetupPage from './routes/setup'
 import LoginPage from './routes/login'
 import SchedulePage from './routes/schedule'
 import PatientsPage from './routes/patients'
@@ -15,16 +17,40 @@ import AvailabilityPage from './routes/availability'
 import SettingsPage from './routes/settings'
 import AccountPage from './routes/account'
 
+// Helper: check if system has been set up
+async function isBootstrapped(): Promise<boolean> {
+  const { data, error } = await supabase.rpc('is_system_bootstrapped')
+  if (error) return true // assume bootstrapped on error to avoid setup loop
+  return !!data
+}
+
 // Root route — no auth check, just renders outlet
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
 })
 
-// Login — accessible without auth, redirect away if already logged in
+// Setup — only accessible when system is NOT bootstrapped
+const setupRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/setup',
+  beforeLoad: async () => {
+    const bootstrapped = await isBootstrapped()
+    if (bootstrapped) {
+      throw redirect({ to: '/login' })
+    }
+  },
+  component: SetupPage,
+})
+
+// Login — accessible without auth, redirect to setup if not bootstrapped
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   beforeLoad: async () => {
+    const bootstrapped = await isBootstrapped()
+    if (!bootstrapped) {
+      throw redirect({ to: '/setup' })
+    }
     const user = await getCurrentUser()
     if (user) {
       throw redirect({ to: '/schedule' })
@@ -38,6 +64,10 @@ const authenticatedRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: 'authenticated',
   beforeLoad: async () => {
+    const bootstrapped = await isBootstrapped()
+    if (!bootstrapped) {
+      throw redirect({ to: '/setup' })
+    }
     const user = await getCurrentUser()
     if (!user) {
       throw redirect({ to: '/login' })
@@ -99,6 +129,7 @@ const indexRoute = createRoute({
 })
 
 const routeTree = rootRoute.addChildren([
+  setupRoute,
   loginRoute,
   authenticatedRoute.addChildren([
     indexRoute,
