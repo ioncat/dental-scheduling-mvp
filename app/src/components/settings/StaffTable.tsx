@@ -18,7 +18,9 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useStaff, useUpdateStaffRole, useUpdateStaffStatus } from '@/hooks/useStaff'
+import { useCurrentStaff } from '@/hooks/useCurrentStaff'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { Check, X } from 'lucide-react'
 import type { Staff, StaffRole, StaffStatus } from '@/lib/database.types'
 
 const statusColors: Record<StaffStatus, string> = {
@@ -29,21 +31,52 @@ const statusColors: Record<StaffStatus, string> = {
 
 export function StaffTable() {
   const { data: staffList, isLoading } = useStaff()
+  const { staff: currentUser } = useCurrentStaff()
   const updateRole = useUpdateStaffRole()
   const updateStatus = useUpdateStaffStatus()
 
   const [confirmDeactivate, setConfirmDeactivate] = useState<Staff | null>(null)
 
-  // Count active admins to prevent deactivating the last one
+  // Track pending (unsaved) role changes per staff member
+  const [pendingRoles, setPendingRoles] = useState<Record<string, StaffRole>>({})
+
+  // Count active admins to prevent losing the last one
   const activeAdminCount = staffList?.filter((s) => s.role === 'admin' && s.status === 'active').length ?? 0
 
-  async function handleRoleChange(staffMember: Staff, newRole: StaffRole) {
-    await updateRole.mutateAsync({ id: staffMember.id, role: newRole })
+  function handleRoleSelect(memberId: string, originalRole: StaffRole, newRole: StaffRole) {
+    if (newRole === originalRole) {
+      // Reverted to original — remove pending change
+      setPendingRoles((prev) => {
+        const next = { ...prev }
+        delete next[memberId]
+        return next
+      })
+    } else {
+      setPendingRoles((prev) => ({ ...prev, [memberId]: newRole }))
+    }
+  }
+
+  async function handleSaveRole(memberId: string) {
+    const newRole = pendingRoles[memberId]
+    if (!newRole) return
+    await updateRole.mutateAsync({ id: memberId, role: newRole })
+    setPendingRoles((prev) => {
+      const next = { ...prev }
+      delete next[memberId]
+      return next
+    })
+  }
+
+  function handleCancelRole(memberId: string) {
+    setPendingRoles((prev) => {
+      const next = { ...prev }
+      delete next[memberId]
+      return next
+    })
   }
 
   async function handleStatusToggle(staffMember: Staff) {
     if (staffMember.status === 'active') {
-      // Check: don't deactivate last admin
       if (staffMember.role === 'admin' && activeAdminCount <= 1) return
       setConfirmDeactivate(staffMember)
     } else {
@@ -85,24 +118,60 @@ export function StaffTable() {
           <TableBody>
             {staffList.map((member) => {
               const isLastAdmin = member.role === 'admin' && activeAdminCount <= 1
+              const isSelf = member.id === currentUser?.id
+              const hasPendingRole = member.id in pendingRoles
+              const displayRole = pendingRoles[member.id] ?? member.role
+
+              // Disable role change if: last admin, or only 1 admin changing own role
+              const roleDisabled = isLastAdmin && isSelf
+
               return (
                 <TableRow key={member.id}>
-                  <TableCell className="font-medium">{member.full_name}</TableCell>
+                  <TableCell className="font-medium">
+                    {member.full_name}
+                    {isSelf && <span className="ml-1 text-xs text-muted-foreground">(you)</span>}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">{member.email}</TableCell>
                   <TableCell>
-                    <Select
-                      value={member.role}
-                      onValueChange={(v) => handleRoleChange(member, v as StaffRole)}
-                    >
-                      <SelectTrigger className="w-36">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="clinic_manager">Clinic Manager</SelectItem>
-                        <SelectItem value="doctor">Doctor</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center gap-1">
+                      <Select
+                        value={displayRole}
+                        onValueChange={(v) => handleRoleSelect(member.id, member.role, v as StaffRole)}
+                        disabled={roleDisabled}
+                      >
+                        <SelectTrigger className="w-36" title={roleDisabled ? 'Cannot change role: last admin in the system' : undefined}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="clinic_manager">Clinic Manager</SelectItem>
+                          <SelectItem value="doctor">Doctor</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {hasPendingRole && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-green-600"
+                            onClick={() => handleSaveRole(member.id)}
+                            disabled={updateRole.isPending}
+                            title="Save role change"
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground"
+                            onClick={() => handleCancelRole(member.id)}
+                            title="Cancel"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge className={statusColors[member.status]} variant="secondary">

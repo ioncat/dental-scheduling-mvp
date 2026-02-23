@@ -20,7 +20,7 @@ import AccountPage from './routes/account'
 // Helper: check if system has been set up
 async function isBootstrapped(): Promise<boolean> {
   const { data, error } = await supabase.rpc('is_system_bootstrapped')
-  if (error) return true // assume bootstrapped on error to avoid setup loop
+  if (error) return false // function missing or DB empty → treat as not bootstrapped
   return !!data
 }
 
