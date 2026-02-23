@@ -90,11 +90,11 @@ Then access is denied
 
 ### Out of Scope
 - Password-based authentication
-- Social login providers
 
 ### Notes for Engineering
 - Supabase Auth magic link flow
 - Login allowed only if staff.status = active
+- Google Social Auth added in Story 1.3
 
 ---
 
@@ -123,3 +123,65 @@ Then all fields are read-only
 
 ### Notes for Engineering
 - Data sourced from Staff table
+
+---
+
+## Story 1.3 — Google Social Auth (Backlog)
+
+### User Story
+As a Staff member
+I want to sign in with my Google account
+So that I can access the system faster without waiting for a magic link email.
+
+### Acceptance Criteria
+Given I am on the login page
+When I click "Sign in with Google"
+Then I am redirected to Google OAuth
+And after authenticating, I am signed in and redirected to /schedule
+
+Given my Google email is NOT in the staff table
+When I complete Google sign-in
+Then the system signs me out immediately
+And shows "Access denied. Contact your administrator."
+
+### Edge Cases
+- Google email differs from staff email (case sensitivity — compare lowercase)
+- User cancels Google OAuth flow
+- Google account has no email (extremely rare)
+
+### Notes for Engineering
+- Enable Google provider in Supabase Dashboard → Authentication → Providers
+- Create OAuth 2.0 credentials in Google Cloud Console
+- Add redirect URI: `https://<project>.supabase.co/auth/v1/callback`
+- Use `supabase.auth.signInWithOAuth({ provider: 'google' })`
+- After OAuth callback, check `is_staff_email()` — if not registered, sign out and show error
+- `link_staff_on_first_login()` trigger handles auth.uid → staff.id linking
+
+### Dependencies
+- Google Cloud Console project with OAuth configured
+- Supabase Auth Google provider enabled
+
+---
+
+## Story 1.4 — Dark Mode Toggle (Backlog)
+
+### User Story
+As a Staff member
+I want to toggle between light and dark mode
+So that I can use the interface comfortably in different lighting conditions.
+
+### Acceptance Criteria
+Given I am authenticated
+When I click the dark mode toggle in the top bar
+Then the interface switches to dark/light mode
+And my preference is persisted in localStorage
+
+Given I return to the app later
+Then my previous theme preference is restored
+
+### Notes for Engineering
+- shadcn/ui dark mode already configured via CSS variables in globals.css
+- Add toggle button (sun/moon icon) to TopBar
+- Apply `.dark` class to `<html>` element
+- Persist preference in `localStorage('theme')`
+- Respect `prefers-color-scheme` as initial default

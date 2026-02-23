@@ -18,17 +18,23 @@ Then all doctors appointments shown
 
 ---
 
-## Story 5.2 — View Weekly Schedule per Doctor
+## Story 5.2 — Navigate Schedule by Day (MVP)
 
 ### User Story
-As Staff  
-I want to view weekly schedule per doctor  
-So that I can understand workload.
+As Staff
+I want to navigate between days using prev/next buttons
+So that I can view any day's appointments.
 
 ### Acceptance Criteria
-Given doctor selected  
-When week changes  
-Then schedule updates  
+Given I am on the schedule page
+When I click prev/next day buttons
+Then the schedule displays appointments for the selected date
+
+### Notes for Engineering
+- Daily column view: one column per active doctor with appointments
+- Doctor role sees only their own column
+- Admin/clinic_manager sees all doctor columns
+- Weekly view deferred to post-MVP
 
 ---
 

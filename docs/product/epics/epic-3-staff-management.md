@@ -73,12 +73,32 @@ Then those appointments become unassigned
 - Deactivating self
 - Deactivating staff with active appointments today
 
-### Out of Scope
-- Reactivation flow
-
 ### Notes for Engineering
 - Trigger reassignment logic
-- Suppress notifications for inactive staff
+- Suppress notifications for inactive staff (post-MVP, see Epic 9)
+
+---
+
+## Story 3.5 — Reactivate Staff Member
+
+### User Story
+As an Admin
+I want to reactivate a previously deactivated staff member
+So that they can regain access to the system.
+
+### Acceptance Criteria
+Given I am admin
+When I click "Activate" on an inactive staff member
+Then staff.status becomes active
+And they can log in again
+
+### Edge Cases
+- Reactivating staff with no remaining appointments
+- Reactivated staff needs to sign in again via magic link
+
+### Notes for Engineering
+- Simple status update to 'active' via updateStaffStatus()
+- No confirmation dialog needed (non-destructive action)
 
 ---
 

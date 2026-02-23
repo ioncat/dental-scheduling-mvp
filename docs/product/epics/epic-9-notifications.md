@@ -1,4 +1,7 @@
-# Epic 9 — Notifications
+# Epic 9 — Notifications (Deferred — Post-MVP)
+
+> **Status:** Deferred. No notification infrastructure exists in the MVP.
+> These stories describe future behavior when email/push notifications are added.
 
 ## Story 9.1 — Suppress Notifications for Inactive Staff
 

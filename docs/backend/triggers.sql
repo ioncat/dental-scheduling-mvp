@@ -24,7 +24,7 @@ create or replace function bootstrap_practice(
   p_admin_name text,
   p_admin_email text,
   p_time_zone text default 'UTC',
-  p_date_format text default 'DD.MM.YYYY'
+  p_date_format text default 'DD/MM/YYYY'
 )
 returns json
 language plpgsql
