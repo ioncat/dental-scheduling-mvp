@@ -1,5 +1,56 @@
 # Epic 1 — Authentication & Account
 
+## Story 1.0 — System Bootstrap & Staff Access Control
+
+### User Story
+As a System Administrator
+I want to be the first user in the system with full privileges
+So that I can register staff members before anyone else can access the application.
+
+### Acceptance Criteria
+Given the system is deployed for the first time
+When the seed script runs
+Then a default admin account is created with a pre-configured email
+And the admin can sign in via Magic Link
+
+Given I am not registered in the staff table
+When I enter my email on the login page
+Then I see an "Access denied. Contact your administrator." message
+And no Magic Link is sent
+
+Given I am registered in the staff table with status "active" or "pending"
+When I enter my email on the login page
+Then a Magic Link is sent to my email
+And I can sign in after clicking the link
+
+Given a new staff member signs in for the first time
+When the Supabase auth account is created
+Then the system automatically links the auth user ID to the existing staff record by email
+
+### Edge Cases
+- Admin email in seed script is invalid or unreachable
+- Staff record exists but status is "inactive" — login must be denied
+- Two staff records with the same email (must not occur; unique constraint required)
+- User clicks Magic Link after staff record was deleted — session created but no data visible (RLS blocks)
+
+### Out of Scope
+- Self-registration flow
+- Password-based authentication
+- Admin account recovery (handled via Supabase Dashboard)
+
+### Notes for Engineering
+- Seed script creates one `practice` + one `staff` (role=admin, status=active)
+- `is_staff_email()` — public RPC function (security definer), callable by anon role, returns boolean
+- `link_staff_on_first_login()` — trigger on `auth.users` INSERT, matches staff by email and updates `staff.id` to `auth.uid()`
+- Login form must call `is_staff_email()` before `signInWithOtp()`
+- The `staff.email` column must have a unique constraint
+
+### Dependencies
+- Database schema (staff table must exist)
+- Supabase Auth configured with Magic Link enabled
+
+---
+
 ## Story 1.1 — Login via Magic Link
 
 ### User Story

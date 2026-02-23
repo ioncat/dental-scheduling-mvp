@@ -21,6 +21,24 @@ export default function LoginPage() {
     setState('loading')
     setErrorMsg('')
 
+    // Check if email is registered in staff table before sending magic link
+    const { data: isRegistered, error: rpcError } = await supabase.rpc(
+      'is_staff_email',
+      { check_email: email.trim() }
+    )
+
+    if (rpcError) {
+      setState('error')
+      setErrorMsg(rpcError.message)
+      return
+    }
+
+    if (!isRegistered) {
+      setState('error')
+      setErrorMsg('Access denied. Contact your administrator.')
+      return
+    }
+
     const { error } = await supabase.auth.signInWithOtp({ email })
 
     if (error) {
