@@ -1,120 +1,158 @@
-# MVP Scope — Dental Appointment Scheduling Platform
+# MVP Scope
 
-## 1. MVP Core Capabilities
+This document defines what is intentionally included — and excluded — from the MVP.
 
-### For Doctor / Clinic Manager
-
-The system must allow doctors (and clinic managers) to:
-
-1. View personal and clinic-wide schedules (daily / weekly)
-2. Work with multiple doctors within the same clinic
-3. Create appointments with:
-	  - patient name (free text)
-	  - appointment type (e.g. consultation, treatment)
-	  - duration
-	  - assigned doctor
-4. Modify existing appointments
-5. Cancel appointments manually
-6. Mark appointments as completed manually
-7. Block unavailable time slots (e.g. breaks, off-days)
-8. Clearly distinguish between:
-	  - scheduled appointments
-	  - cancelled appointments
-	  - completed appointments
-	  - blocked time
-9. Perform quick search by patient name (free text)
-10. Filter appointments by:
-	  - doctor
-	  - date
-	  - status
-11. View basic appointment history (list-based)
+The goal of this MVP is not feature completeness.  
+The goal is to validate a coherent operational scheduling model for a single clinic.
 
 ---
 
-## 2. Supported Roles (MVP)
+## MVP Objective
 
-### Doctor (Primary User)
+Deliver a working internal scheduling system that supports real clinic workflows:
 
-- Owns personal schedule
-- Creates, edits, completes, and cancels appointments
-- Can block personal availability
-- May also act as Clinic Manager in small clinics
+- staff management
+- patient lifecycle
+- appointment scheduling
+- availability and time off
+- operational reassignment
+- role-based access
 
-### Clinic Manager / Receptionist
-
-- Views schedules of all doctors in the clinic
-- Creates, edits, completes, and cancels appointments for any doctor
-- Manages availability across the clinic
-
-### Patient
-
-- No direct system access in MVP
-- Appointments are created and managed by clinic staff
+The MVP focuses on operational clarity, not growth features.
 
 ---
 
-## 3. Key User Flows (High-Level)
+## In Scope
 
-### Doctor starts the day
+### Clinic Operations
 
-1. Opens personal schedule
-2. Reviews today’s appointments
-3. Sees blocked time vs scheduled visits
-4. Handles appointments during the day
-5. Marks completed visits manually
-
----
-
-### Creating an appointment
-
-1. Select doctor
-2. Select date & time
-3. Enter patient name
-4. Choose appointment type
-5. Set duration (default 1 hour)
-6. Save → appointment becomes "scheduled"
-
-Note: Default duration reduces user effort and reflects typical dental treatment length.
+- Single clinic setup
+- Practice configuration
+- Staff roles:
+  - admin
+  - doctor
+  - clinic manager
 
 ---
 
-### Cancelling an appointment
+### Staff Lifecycle
 
-1. Open appointment
-2. Click cancel
-3. Confirm cancellation
-4. Status becomes "cancelled"
-
----
-
-### Blocking availability
-
-1. Select time range
-2. Mark as unavailable
-3. Slot becomes blocked
+- invite staff
+- activate / deactivate staff
+- role assignment
+- visibility based on role
+- inactive staff excluded from operations and notifications
 
 ---
 
-## 4. Explicit Out of Scope (MVP)
+### Patient Lifecycle
 
-The MVP explicitly excludes:
-
-- Online patient self-booking
-- Payments, billing, or invoices
-- Insurance workflows
-- Medical records
-- Advanced reporting or analytics dashboards
-- External calendar synchronization (Google / Apple)
-- SMS / email notifications
-- Role customization or complex permission matrices
-- Multi-location clinic hierarchies (single clinic with multiple doctors only)
+- create patient
+- edit patient data
+- archive / restore patient
+- prevent scheduling for archived patients
 
 ---
 
-## 5. Assumptions & Constraints
+### Scheduling
 
-- Small clinics often rely on doctors to perform administrative tasks
-- Clinics currently use Google Calendar as their primary scheduling tool
-- Appointment data is valuable but MVP focuses on scheduling clarity, not analytics
-- UX must be usable without training
-- MVP prioritizes speed of learning over architectural scalability
+- create appointments
+- cancel appointments
+- complete appointments
+- explicit unassigned state
+- manual reassignment
+- daily and weekly schedule views
+
+---
+
+### Availability
+
+- weekly availability per doctor
+- time off periods (vacation / sick / blocked)
+- availability enforced at booking time
+
+---
+
+### Operational Rules
+
+- no double booking
+- no scheduling outside availability
+- UTC storage for all datetimes
+- lifecycle-based soft delete
+- reassignment on doctor deactivation
+- database-enforced constraints
+
+---
+
+### Access Control
+
+- role-based visibility
+- practice-scoped data
+- row-level security
+- backend-enforced permissions
+
+---
+
+## Explicitly Out of Scope
+
+These are intentionally deferred:
+
+### Patient-Facing Features
+
+- patient self-booking
+- patient portal
+- online payments
+- insurance handling
+
+---
+
+### External Integrations
+
+- calendar sync
+- third-party scheduling tools
+- messaging platforms
+
+---
+
+### Growth Capabilities
+
+- multi-clinic support
+- shared staff across clinics
+- analytics dashboards
+- reporting
+- marketing automation
+
+---
+
+### Advanced UX
+
+- animations
+- complex UI personalization
+- accessibility optimization (beyond basics)
+
+---
+
+## Product Philosophy
+
+The MVP prioritizes:
+
+- operational correctness over convenience
+- explicit workflows over automation
+- clarity over feature breadth
+- real usage over hypothetical scale
+
+Edge cases are treated as core states, not exceptions.
+
+---
+
+## Definition of MVP Success
+
+The MVP is considered successful when:
+
+- a clinic can manage staff, patients, and appointments end-to-end
+- scheduling conflicts are prevented by the system
+- operational gaps are surfaced, not hidden
+- domain rules are enforced by the backend
+- the product can support real daily workflows
+
+---

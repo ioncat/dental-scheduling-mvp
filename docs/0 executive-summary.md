@@ -1,180 +1,91 @@
-# Executive Summary — Dental Appointment Scheduling MVP
+# Executive Summary
 
-## Overview
+This project represents an end-to-end Product Owner / Product Manager case that evolved into a working application.
 
-This project represents a full end-to-end Product Owner / Product Manager simulation, from problem discovery to MVP delivery design.
+It began as a product discovery exercise focused on improving operational scheduling in small dental clinics and gradually progressed into a fully specified system with executable architecture.
 
-The goal was to design a real, buildable product while demonstrating structured product thinking, delivery ownership, and cross-functional alignment.
-
-The outcome is a production-ready MVP backlog for a dental appointment scheduling platform, intended to replace Google Calendar as a clinic’s primary scheduling tool.
-
-This is not a theoretical exercise — the product is planned for real implementation using vibe-coding and iterative validation.
+The goal was not only to define a product, but to demonstrate how product thinking translates into real system design.
 
 ---
 
 ## Problem
 
-Small dental clinics frequently use Google Calendar as their appointment scheduling system.
+Small dental clinics typically manage scheduling through fragmented tools:
 
-While convenient, Google Calendar lacks:
+- manual calendars  
+- messaging apps  
+- ad-hoc spreadsheets  
 
-- doctor-centric workload visibility
-- medical appointment constraints
-- availability management
-- lifecycle control (completed vs cancelled)
-- reusable operational data
+This leads to:
 
-As a result:
-
-- schedules become chaotic
-- doctors lose clarity over daily workload
-- clinics rely on manual coordination
-- valuable data remains unusable
-
-Google Calendar is being used outside its intended purpose.
+- double bookings  
+- unclear staff availability  
+- operational friction when doctors become unavailable  
+- lack of visibility into patient lifecycle  
 
 ---
 
-## Product Hypothesis
+## Product Approach
 
-Dentists are willing to replace Google Calendar with a purpose-built scheduling tool if it provides:
+The product was designed around operational reality rather than idealized flows.
 
-- clear personal schedules
-- explicit availability control
-- simple appointment lifecycle management
-- faster daily operations
+Key product principles:
 
----
+- explicit staff lifecycle (active / inactive)
+- explicit patient lifecycle (create / archive / restore)
+- appointment reassignment as a first-class concept
+- availability and time off modeled separately
+- operational alerts for unresolved scheduling states
+- clear role separation (admin / doctor / clinic manager)
 
-## MVP Goal
+Instead of hiding edge cases, the product surfaces them.
 
-Validate **Value + Adoption**.
-
-Specifically:
-
-Determine whether dentists will use a dedicated scheduling system as their primary tool and abandon Google Calendar for daily appointment management.
+Unassigned appointments, archived patients, and inactive staff are treated as core states, not exceptions.
 
 ---
 
-## Primary User
+## Process
 
-Doctor (Dentist)
+The project followed a contract-driven product approach:
 
-Secondary:
-- Clinic Manager / Receptionist
-- Patient (indirectly)
+1. Product framing and discovery  
+2. Domain modeling  
+3. Delivery planning via epics and stories  
+4. System architecture derived from product decisions  
+5. Implementation of backend contracts  
+6. Frontend assembly in progress  
 
-In small clinics, Doctor and Clinic Manager roles often overlap.
+Each step builds directly on the previous one.
 
----
-
-## MVP Scope
-
-The MVP focuses on:
-
-- clinic onboarding
-- multi-doctor scheduling
-- appointment creation with default duration
-- availability blocking
-- appointment lifecycle (scheduled / cancelled / completed)
-- search by patient name
-- filtering by doctor, date, and status
-
-Explicitly excluded:
-
-- patient self-booking
-- billing
-- medical records
-- external calendar sync
-- analytics dashboards
-- notifications
+Architecture was intentionally introduced only after the product domain was fully specified.
 
 ---
 
-## Delivery Approach
+## Outcome
 
-The product is structured into five Epics:
+The result is a cohesive product system including:
 
-1. Clinic & User Setup  
-2. Scheduling Core  
-3. Availability Management  
-4. Appointment Lifecycle  
-5. Search & Filtering  
+- canonical domain contract  
+- delivery-ready epics  
+- database-enforced business rules  
+- role-based access control  
+- UI specifications  
+- and an actively developed frontend  
 
-Each Epic includes:
-
-- Jira-style User Stories
-- Acceptance Criteria
-- Edge Cases
-- Out of Scope definitions
-- Engineering Notes
-- Delivery RACI
-
-A Product Delivery Conventions document defines backlog standards and acts as a working contract between Product and Engineering.
+This repository demonstrates how product decisions can be translated into executable constraints rather than remaining abstract documentation.
 
 ---
 
-## Roadmap Philosophy
+## Why This Case Matters
 
-The roadmap prioritizes learning speed over feature completeness:
+Most product case studies stop at presentations or mockups.
 
-- Phase 1: Clinic onboarding
-- Phase 2: Core scheduling
-- Phase 3: Operational workflows
-- Phase 4: MVP validation with pilot clinics
+This project goes further by:
 
-Success is measured by:
+- formalizing the domain
+- enforcing product rules at system level
+- and building a real application
 
-- doctors using the system daily
-- appointments managed end-to-end
-- Google Calendar no longer required
-- qualitative feedback indicating improved clarity
+It illustrates how a Product Manager can drive clarity from discovery through delivery and into implementation.
 
 ---
-
-## System Design
-
-The MVP includes:
-
-- logical system context
-- scheduling rules table
-- appointment lifecycle model
-- minimal database schema
-
-The design emphasizes:
-
-- explicit business rules
-- server-side validation
-- clarity over abstraction
-- fast iteration over scalability
-
----
-
-## What This Demonstrates
-
-This project showcases:
-
-- product discovery to delivery flow
-- MVP scoping discipline
-- backlog ownership
-- cross-functional thinking
-- operational modeling
-- data-driven design
-- readiness for real implementation
-
-The artifacts are intentionally practical and structured as they would be in a real product team.
-
----
-
-## Next Steps
-
-- Implement MVP via vibe-coding
-- Onboard 1–3 pilot clinics
-- Observe real usage
-- Iterate based on behavioral signals
-- Decide on expansion or pivot
-
----
-
-This case represents a complete Product Owner workflow:  
-from identifying a real-world problem to preparing a build-ready MVP.

@@ -1,158 +1,84 @@
-# MVP Roadmap — Dental Appointment Scheduling Platform
+# Product Roadmap
 
-## Roadmap Objective
+This roadmap describes the intended evolution of the Dental Scheduling product from MVP to a production-ready system.
 
-Deliver a functional MVP that validates whether dentists are willing to replace Google Calendar with a purpose-built scheduling tool, focusing on clarity, control, and daily operational usability.
+It focuses on product capability growth rather than technical implementation details.
 
-The roadmap prioritizes learning speed over feature completeness.
+---
+
+## Phase 1 — Operational MVP (current)
+
+Goal: deliver a functional scheduling system aligned with real clinic workflows.
+
+Scope:
+
+- Staff lifecycle management (admin / doctor / clinic manager)
+- Patient lifecycle (create / archive / restore)
+- Appointment scheduling with reassignment
+- Availability and time off
+- Role-based access control
+- Operational alerts for unresolved states
+- Database-enforced product rules
+
+Outcome:
+
+A working system capable of supporting day-to-day scheduling in a single clinic.
+
+Status: In progress.
+
+---
+
+## Phase 2 — Usability & Workflow Refinement
+
+Goal: improve efficiency of daily operations.
+
+Planned capabilities:
+
+- faster scheduling interactions
+- improved visual schedule navigation
+- bulk operations (appointments, availability)
+- clearer operational alerts
+- reduced friction in reassignment flows
+
+Focus:
+
+Making the system comfortable for real-world usage by clinic staff.
+
+---
+
+## Phase 3 — Multi-Clinic Readiness
+
+Goal: support multiple practices and shared staff.
+
+Planned capabilities:
+
+- multi-practice staff accounts
+- cross-clinic visibility controls
+- centralized administration
+- refined permission model
+
+---
+
+## Phase 4 — Patient Engagement (Future)
+
+Goal: extend product beyond internal operations.
+
+Planned capabilities:
+
+- patient notifications
+- appointment reminders
+- patient self-service (optional)
+- marketing communication channels
+
+These features are intentionally deferred until core operations are stable.
 
 ---
 
 ## Guiding Principles
 
-- Ship value early
-- Validate assumptions continuously
-- Avoid overengineering
-- Optimize for real-world workflows
-- Treat MVP as an experiment, not a product launch
+- Operational stability before growth
+- Explicit workflows over automation magic
+- Product clarity before feature expansion
+- Real usage before optimization
 
 ---
-
-## Phase 0 — Product Foundation
-
-### Goal
-Establish product direction and delivery standards.
-
-### Scope
-
-- Product Vision
-- MVP Scope Definition
-- Delivery Conventions
-- Epic breakdown
-- User Stories
-
-### Output
-
-- Aligned product strategy
-- Ready-to-build backlog
-
----
-
-## Phase 1 — Clinic Onboarding
-
-### Epics
-- Epic 1 — Clinic & User Setup
-
-### Goal
-
-Enable clinics and doctors to access the system.
-
-### Key Deliverables
-
-- Clinic creation
-- Doctor invitation flow
-- Login
-- Role assignment
-
-### Success Signal
-
-- Doctors can log in and see empty schedules
-
----
-
-## Phase 2 — Core Scheduling
-
-### Epics
-
-- Epic 2 — Scheduling Core  
-- Epic 3 — Availability Management  
-
-### Goal
-
-Replace Google Calendar for daily scheduling.
-
-### Key Deliverables
-
-- Daily / weekly views
-- Appointment creation with default duration
-- Multi-doctor support
-- Blocked time handling
-
-### Success Signals
-
-- Doctors actively create appointments
-- Blocked time prevents booking
-- No overlapping appointments
-
----
-
-## Phase 3 — Operational Workflow
-
-### Epics
-
-- Epic 4 — Appointment Lifecycle  
-- Epic 5 — Search & Filtering  
-
-### Goal
-
-Support real clinic operations.
-
-### Key Deliverables
-
-- Cancel / complete appointments
-- Appointment history
-- Search by patient name
-- Filters by doctor, date, status
-
-### Success Signals
-
-- Clinics manage full appointment lifecycle
-- Staff can quickly locate visits
-
----
-
-## Phase 4 — MVP Validation
-
-### Goal
-
-Validate Value + Adoption.
-
-### Activities
-
-- Onboard 1–3 pilot clinics
-- Observe real scheduling behavior
-- Collect qualitative feedback
-- Identify friction points
-
-### Key Questions
-
-- Do doctors stop using Google Calendar?
-- Is the system used daily?
-- Does it reduce scheduling confusion?
-
----
-
-## Phase 5 — Post-MVP Decision
-
-### Options
-
-- Iterate on UX based on feedback
-- Add patient self-booking
-- Introduce basic analytics
-- Explore pricing
-- Pivot based on learning
-
-Decisions driven by real usage, not assumptions.
-
----
-
-## MVP Completion Criteria
-
-The MVP is considered successful if:
-
-- Doctors use the system as primary scheduling tool
-- Appointments are managed end-to-end
-- Google Calendar is no longer required
-- Users report improved clarity and control
-
-Failure to reach these signals triggers reassessment of product direction.

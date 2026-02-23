@@ -1,0 +1,4 @@
+- children as patients with no phone #
+- family accounts
+- insurance
+- multi-practice staff

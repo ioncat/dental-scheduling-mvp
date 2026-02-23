@@ -1,113 +1,101 @@
-# Dental Appointment Scheduling MVP  
-> End-to-end Product Owner case (Discovery → MVP → Delivery → System Design)
+# Dental Scheduling MVP  
+End-to-End Product Case → Executable System
 
-This repository contains a complete product case for an MVP dental appointment scheduling platform.
+This repository represents a complete Product Owner / Product Manager case that evolved into a working product.
 
-It represents a full Product Owner / Product Manager workflow — from problem discovery and MVP scoping to delivery artifacts and system design.
+It started as a product discovery and specification exercise  
+and continues as a real system implementation.
 
-The product is designed to replace Google Calendar as the primary scheduling tool for small dental clinics.
+This is not a coding demo.
 
-This is not a theoretical exercise — the MVP is planned for real implementation using vibe-coding.
-
----
-
-## What is this project?
-
-Small dental clinics often use Google Calendar to manage appointments.
-
-While convenient, Google Calendar lacks:
-- doctor-centric workload visibility
-- availability management
-- appointment lifecycle control
-- domain-specific scheduling constraints
-- reusable operational data
-
-As a result, clinics experience scheduling chaos and rely on manual coordination.
-
-This project explores whether dentists would adopt a purpose-built scheduling system if it provided clarity, control, and operational simplicity.
+This is a product brought to life.
 
 ---
 
-## MVP Goal
+## What This Project Is
 
-Validate **Value + Adoption**.
+An operational scheduling system for dental clinics covering:
 
-Specifically:
+- staff lifecycle (admin / doctor / clinic manager)
+- patient lifecycle (create / archive / restore)
+- appointment scheduling with reassignment
+- availability and time off
+- role-based access
+- database-enforced business rules
 
-Determine whether doctors are willing to replace Google Calendar with a dedicated scheduling platform for daily operations.
-
----
-
-## What’s inside this repository
-
-Product artifacts:
-- Product Vision
-- MVP Scope
-- Product Delivery Conventions (backlog standards)
-- Epics 1–5 with User Stories and Acceptance Criteria
-- MVP Roadmap
-- System Context
-- Scheduling Logic
-- Database Schema
-
-Diagrams:
-- User Flow
-- Appointment Lifecycle
-- ER Diagram
-- Container Diagram
-
-All documentation lives in the `/docs` folder.
-
----
-## Product Lifecycle Overview
-
-For a structured view of how this case moves from Discovery to MVP, Delivery, and System Design, see:  
-👉 [product-lifecycle-map.md](product-lifecycle-map.md)
+The product was designed first at product level (vision, scope, roadmap, decisions)  
+and only then translated into system architecture and implementation.
 
 ---
 
-## Where to start (recommended reading order)
+## What This Repository Demonstrates
+
+This project intentionally shows the full product loop:
+
+Product discovery  
+→ domain modeling  
+→ delivery planning  
+→ system architecture  
+→ working application  
+
+Most repositories show either documentation or code.
+
+This one connects both.
+
+Architecture here is not speculative — it directly follows product decisions.
+
+---
+
+## Where to Start (Recommended Reading Order)
 
 If you only have a few minutes:
 
-1. `docs/executive-summary.md`  
-2. `docs/epics/epic-02-scheduling-core.md`  
-3. `docs/roadmap.md`  
-4. `docs/system-context.md`  
+1. Executive Summary — product context and goals  
+2. Domain Contract — canonical product definition  
+3. Delivery Epics — how the product is broken down  
+4. System Context — high-level technical view  
 
-These files provide the fastest understanding of the product and delivery approach.
-
----
-
-## MVP Scope (high level)
-
-Included:
-- Clinic onboarding
-- Multi-doctor scheduling
-- Appointment creation (default duration)
-- Availability blocking
-- Appointment lifecycle (scheduled / cancelled / completed)
-- Search by patient name
-- Filters by doctor, date, and status
-
-Explicitly excluded:
-- Patient self-booking
-- Payments and billing
-- Medical records
-- External calendar integrations
-- Analytics dashboards
-- Notifications
+These provide the fastest understanding of both the product thinking and its execution.
 
 ---
 
-## Status
+## High-Level System View
 
-MVP documentation complete.  
-Implementation in progress via vibe-coding.
+
+Browser (Single Page Application)
+↓
+Frontend Application
+↓
+Backend Platform (Postgres + Auth + Access Control)
+
+
+Core business rules are enforced at database level rather than in UI code.
 
 ---
 
-## Author
+## Project Status
+
+The product definition and backend contracts are complete.
+
+The project is currently in the implementation phase, focusing on UI assembly and frontend integration.
+
+---
+
+## Author Note
+
+This repository intentionally demonstrates:
+
+- product discovery and framing  
+- domain-driven thinking  
+- architectural translation of product decisions  
+- delivery breakdown  
+- and execution  
+
+as a single continuous process.
+
+It started as a Product Manager case study and is being developed into a real application.
 
 Alex Bondarenko  
-Product Owner / Product Manager
+
+---
+
