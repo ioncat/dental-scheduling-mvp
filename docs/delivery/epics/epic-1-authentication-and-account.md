@@ -197,33 +197,9 @@ And I see a success confirmation
 
 ---
 
-## Story 1.6 — Bug: Staff Profile Not Found for New Users (Backlog)
+## ~~Story 1.6 — Bug: Staff Profile Not Found for New Users~~ (Resolved)
 
-### Bug Description
-A newly invited staff member (doctor) who signs in via magic link sees
-"Staff profile not found" on the Account page.
-
-### Root Cause (Suspected)
-The `link_staff_on_first_login()` trigger fires on `auth.users INSERT` and sets
-`staff.id = auth.uid()`. If the timing is off, or the trigger fails silently,
-`useCurrentStaff()` queries `staff` by `auth.uid()` and finds no match.
-
-### Steps to Reproduce
-1. Admin invites a new doctor via Settings → Staff → Invite
-2. Doctor clicks magic link in email
-3. Doctor lands on /schedule → navigates to /account
-4. Error: "Staff profile not found"
-
-### Expected Behavior
-Account page shows the staff member's profile (name, email, role, status).
-
-### Notes for Engineering
-- Verify `link_staff_on_first_login()` trigger is correctly updating `staff.id`
-- Check if `signInWithOtp` with `shouldCreateUser: true` creates the auth.users
-  record BEFORE the staff record exists (race condition)
-- Consider adding a retry/polling mechanism in `useCurrentStaff` if staff record
-  is not immediately found after first login
-- Add logging to the trigger for debugging
+> **Closed.** Tested on 2026-02-24 — works correctly. The `link_staff_on_first_login()` trigger links staff.id to auth.uid() as expected.
 
 ---
 
