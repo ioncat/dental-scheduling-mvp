@@ -67,6 +67,21 @@ using (
   and id = auth_practice_id()
 );
 
+-- Only admin can update practice settings
+create policy practice_update_by_admin
+on practice
+for update
+using (
+  auth_is_active_staff()
+  and id = auth_practice_id()
+  and auth_staff_role() = 'admin'
+)
+with check (
+  auth_is_active_staff()
+  and id = auth_practice_id()
+  and auth_staff_role() = 'admin'
+);
+
 ---------------------------------------------------------
 -- STAFF
 ---------------------------------------------------------

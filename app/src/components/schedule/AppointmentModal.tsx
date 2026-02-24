@@ -11,9 +11,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { DoctorSelector } from '@/components/shared/DoctorSelector'
-import { PatientSelector } from '@/components/shared/PatientSelector'
+import { PatientPickerModal } from '@/components/shared/PatientPickerModal'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useCreateAppointment, useUpdateAppointment } from '@/hooks/useAppointments'
+import { useAvailability, useTimeOff } from '@/hooks/useAvailability'
 import { useCurrentStaff } from '@/hooks/useCurrentStaff'
 import type { AppointmentStatus } from '@/lib/database.types'
 
@@ -58,6 +59,54 @@ export function AppointmentModal({
   const [endTime, setEndTime] = useState('')
   const [notes, setNotes] = useState('')
   const [confirmCancel, setConfirmCancel] = useState(false)
+  const [patientPickerOpen, setPatientPickerOpen] = useState(false)
+
+  // Fetch availability & time-off for selected doctor (create mode only)
+  const { data: availability } = useAvailability(mode === 'create' ? doctorId : undefined)
+  const { data: timeOff } = useTimeOff(mode === 'create' ? doctorId : undefined)
+
+  // Check if selected time fits doctor's availability
+  function getAvailabilityWarning(): string | null {
+    if (!doctorId || !startTime || !endTime || mode !== 'create') return null
+
+    const start = new Date(startTime)
+    const end = new Date(endTime)
+    const weekday = start.getUTCDay()
+    const startMinutes = start.getUTCHours() * 60 + start.getUTCMinutes()
+    const endMinutes = end.getUTCHours() * 60 + end.getUTCMinutes()
+
+    // Check availability slots
+    if (availability && availability.length > 0) {
+      const daySlots = availability.filter((s) => s.weekday === weekday)
+      if (daySlots.length === 0) {
+        return 'Doctor has no availability on this day'
+      }
+      const fitsSlot = daySlots.some((s) => {
+        const [sh, sm] = s.start_time.split(':').map(Number)
+        const [eh, em] = s.end_time.split(':').map(Number)
+        return startMinutes >= sh * 60 + sm && endMinutes <= eh * 60 + em
+      })
+      if (!fitsSlot) {
+        return 'Appointment is outside doctor\'s available hours'
+      }
+    }
+
+    // Check time-off
+    if (timeOff && timeOff.length > 0) {
+      const hasConflict = timeOff.some((t) => {
+        const tStart = new Date(t.start_datetime).getTime()
+        const tEnd = new Date(t.end_datetime).getTime()
+        return start.getTime() < tEnd && end.getTime() > tStart
+      })
+      if (hasConflict) {
+        return 'Doctor is on time off during this period'
+      }
+    }
+
+    return null
+  }
+
+  const availabilityWarning = getAvailabilityWarning()
 
   useEffect(() => {
     if (mode === 'view' && appointment) {
@@ -76,14 +125,14 @@ export function AppointmentModal({
   }, [mode, appointment, defaultDate])
 
   async function handleCreate() {
-    if (!patient || !startTime || !endTime || !practiceId) return
+    if (!patient || !doctorId || !startTime || !endTime || !practiceId) return
     await createMutation.mutateAsync({
       practice_id: practiceId,
       patient_id: patient.id,
-      doctor_id: doctorId || null,
+      doctor_id: doctorId,
       start_time: new Date(startTime).toISOString(),
       end_time: new Date(endTime).toISOString(),
-      status: doctorId ? 'scheduled' : 'unassigned',
+      status: 'scheduled',
       notes: notes || null,
     })
     onOpenChange(false)
@@ -141,7 +190,14 @@ export function AppointmentModal({
             <div className="flex flex-col gap-2">
               <Label>Patient</Label>
               {mode === 'create' ? (
-                <PatientSelector value={patient} onSelect={setPatient} />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start font-normal"
+                  onClick={() => setPatientPickerOpen(true)}
+                >
+                  {patient ? patient.full_name : <span className="text-muted-foreground">Select patient...</span>}
+                </Button>
               ) : (
                 <Input value={appointment?.patient?.full_name ?? ''} disabled />
               )}
@@ -149,12 +205,11 @@ export function AppointmentModal({
 
             {mode === 'create' && (
               <div className="flex flex-col gap-2">
-                <Label>Doctor (optional)</Label>
+                <Label>Doctor</Label>
                 <DoctorSelector
                   value={doctorId}
                   onValueChange={setDoctorId}
-                  placeholder="Leave unassigned"
-                  allowUnassigned
+                  placeholder="Select doctor..."
                 />
               </div>
             )}
@@ -189,13 +244,20 @@ export function AppointmentModal({
                 disabled={mode === 'view'}
               />
             </div>
+
+            {availabilityWarning && (
+              <p className="text-sm text-destructive">{availabilityWarning}</p>
+            )}
+            {createMutation.error && (
+              <p className="text-sm text-destructive">{(createMutation.error as Error).message}</p>
+            )}
           </div>
 
           <DialogFooter className="flex-col gap-2 sm:flex-row">
             {mode === 'create' && (
               <Button
                 onClick={handleCreate}
-                disabled={!patient || !startTime || !endTime || createMutation.isPending}
+                disabled={!patient || !doctorId || !startTime || !endTime || !!availabilityWarning || createMutation.isPending}
               >
                 {createMutation.isPending ? 'Creating...' : 'Create Appointment'}
               </Button>
@@ -229,6 +291,12 @@ export function AppointmentModal({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PatientPickerModal
+        open={patientPickerOpen}
+        onOpenChange={setPatientPickerOpen}
+        onSelect={setPatient}
+      />
 
       <ConfirmDialog
         open={confirmCancel}

@@ -16,14 +16,14 @@ export function AppLayout() {
 
   return (
     <div className="flex h-screen">
-      <aside className="w-56 shrink-0 border-r bg-card">
+      <aside className="flex w-56 shrink-0 flex-col border-r bg-card">
         <div className="flex h-14 items-center border-b px-4">
           <span className="text-sm font-semibold">Dental Scheduling</span>
         </div>
-        <SidebarNav role={role} />
+        <SidebarNav role={role} staffName={staff?.full_name ?? null} />
       </aside>
       <div className="flex flex-1 flex-col overflow-hidden">
-        <TopBar staffName={staff?.full_name ?? null} />
+        <TopBar />
         <main className="flex-1 overflow-auto p-6">
           <Outlet />
         </main>

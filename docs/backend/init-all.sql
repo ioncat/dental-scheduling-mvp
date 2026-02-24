@@ -262,7 +262,41 @@ $$ language plpgsql;
 create trigger trg_prevent_overlap
 before insert or update on appointment for each row execute function prevent_overlapping_appointments();
 
--- 5. Enforce UTC timestamps
+-- 5. Prevent booking outside doctor availability
+
+create or replace function prevent_booking_outside_availability()
+returns trigger as $$
+declare
+  v_weekday int;
+  v_start_time time;
+  v_end_time time;
+begin
+  if new.doctor_id is null then return new; end if;
+  v_weekday := extract(dow from new.start_time);
+  v_start_time := new.start_time::time;
+  v_end_time := new.end_time::time;
+  if not exists (
+    select 1 from availability a
+    where a.staff_id = new.doctor_id and a.weekday = v_weekday
+      and a.start_time <= v_start_time and a.end_time >= v_end_time
+  ) then
+    raise exception 'Appointment is outside doctor availability';
+  end if;
+  if exists (
+    select 1 from time_off t
+    where t.staff_id = new.doctor_id
+      and tstzrange(t.start_datetime, t.end_datetime) && tstzrange(new.start_time, new.end_time)
+  ) then
+    raise exception 'Doctor is on time off during this period';
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_check_availability
+before insert or update on appointment for each row execute function prevent_booking_outside_availability();
+
+-- 6. Enforce UTC timestamps
 
 create or replace function enforce_utc()
 returns trigger as $$
@@ -306,6 +340,10 @@ as $$ select exists (select 1 from staff where id = auth.uid() and status = 'act
 -- PRACTICE
 create policy practice_visible_to_members on practice for select
 using (auth_is_active_staff() and id = auth_practice_id());
+
+create policy practice_update_by_admin on practice for update
+using (auth_is_active_staff() and id = auth_practice_id() and auth_staff_role() = 'admin')
+with check (auth_is_active_staff() and id = auth_practice_id() and auth_staff_role() = 'admin');
 
 -- STAFF
 create policy staff_visible_within_practice on staff for select

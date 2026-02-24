@@ -199,7 +199,58 @@ for each row
 execute function prevent_overlapping_appointments();
 
 ---------------------------------------------------------
--- 5. Enforce UTC timestamps (guardrail)
+-- 5. Prevent booking outside doctor availability
+---------------------------------------------------------
+
+create or replace function prevent_booking_outside_availability()
+returns trigger as $$
+declare
+  v_weekday int;
+  v_start_time time;
+  v_end_time time;
+begin
+  -- Skip check for unassigned appointments
+  if new.doctor_id is null then
+    return new;
+  end if;
+
+  -- Extract weekday (0=Sun, 6=Sat) and time from appointment
+  v_weekday := extract(dow from new.start_time);
+  v_start_time := new.start_time::time;
+  v_end_time := new.end_time::time;
+
+  -- Check: appointment must fit within at least one availability slot
+  if not exists (
+    select 1 from availability a
+    where a.staff_id = new.doctor_id
+      and a.weekday = v_weekday
+      and a.start_time <= v_start_time
+      and a.end_time >= v_end_time
+  ) then
+    raise exception 'Appointment is outside doctor availability';
+  end if;
+
+  -- Check: appointment must not overlap with any time-off period
+  if exists (
+    select 1 from time_off t
+    where t.staff_id = new.doctor_id
+      and tstzrange(t.start_datetime, t.end_datetime)
+          && tstzrange(new.start_time, new.end_time)
+  ) then
+    raise exception 'Doctor is on time off during this period';
+  end if;
+
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_check_availability
+before insert or update on appointment
+for each row
+execute function prevent_booking_outside_availability();
+
+---------------------------------------------------------
+-- 6. Enforce UTC timestamps (guardrail)
 ---------------------------------------------------------
 
 create or replace function enforce_utc()

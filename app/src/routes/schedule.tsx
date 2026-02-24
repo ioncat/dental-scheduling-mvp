@@ -89,17 +89,9 @@ export default function SchedulePage() {
   return (
     <div className="flex flex-col gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Schedule</h1>
-        {canManage && (
-          <Button onClick={handleCreate} size="sm">
-            <Plus className="mr-1 h-4 w-4" />
-            New Appointment
-          </Button>
-        )}
-      </div>
+      <h1 className="text-2xl font-semibold">Schedule</h1>
 
-      {/* Date navigation */}
+      {/* Date navigation + New Appointment */}
       <div className="flex items-center gap-2">
         <Button variant="outline" size="icon" onClick={() => shiftDate(-1)}>
           <ChevronLeft className="h-4 w-4" />
@@ -116,6 +108,12 @@ export default function SchedulePage() {
         <Button variant="ghost" size="sm" onClick={() => setSelectedDate(formatDate(new Date()))}>
           Today
         </Button>
+        {canManage && (
+          <Button onClick={handleCreate} size="sm">
+            <Plus className="mr-1 h-4 w-4" />
+            New Appointment
+          </Button>
+        )}
       </div>
 
       {/* Unassigned alert */}
