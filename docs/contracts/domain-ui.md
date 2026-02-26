@@ -31,6 +31,30 @@ Practice (clinic) is resolved implicitly via staff membership.
 
 ---
 
+## Business Rules
+
+Core scheduling and operational rules. All enforced at database level via triggers and RLS policies.
+
+| # | Rule | Category |
+|---|---|---|
+| R1 | Appointments cannot overlap for the same doctor | Scheduling |
+| R2 | Appointments cannot be created outside doctor's availability | Scheduling |
+| R3 | Time off overrides availability and blocks booking | Scheduling |
+| R4 | Appointment status is "scheduled" on creation | Lifecycle |
+| R5 | Completed appointments are immutable | Lifecycle |
+| R6 | Cancelled appointments free the time slot | Lifecycle |
+| R7 | When a doctor is deactivated, all future appointments become unassigned | Operations |
+| R8 | Unassigned appointments must be reassigned manually before rescheduling | Operations |
+| R9 | Patients cannot be archived while future appointments exist | Patient |
+| R10 | Archived patients cannot receive new appointments | Patient |
+| R11 | Inactive staff cannot receive new appointments or log in | Staff |
+| R12 | The last admin cannot be deactivated | Staff |
+| R13 | All datetimes stored in UTC, displayed in practice timezone | System |
+| R14 | No entity with history is physically deleted (lifecycle-based soft delete) | System |
+| R15 | All data is practice-scoped via row-level security | System |
+
+---
+
 ## Domain: Practice
 
 Visible in Settings (admin only).

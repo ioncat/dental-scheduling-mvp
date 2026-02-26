@@ -4,9 +4,23 @@ This roadmap describes the intended evolution of the Dental Scheduling product f
 
 It focuses on product capability growth rather than technical implementation details.
 
+The roadmap prioritizes learning speed over feature completeness. The MVP is treated as an experiment, not a product launch.
+
 ---
 
-## Phase 1 — Operational MVP (current)
+## Guiding Principles
+
+- Ship value early, validate continuously
+- Treat MVP as an experiment, not a product launch
+- Operational stability before growth
+- Explicit workflows over automation magic
+- Product clarity before feature expansion
+- Real usage before optimization
+- Decisions driven by real usage, not assumptions
+
+---
+
+## Phase 1 — Operational MVP
 
 Goal: deliver a functional scheduling system aligned with real clinic workflows.
 
@@ -19,26 +33,69 @@ Scope:
 - Role-based access control
 - Operational alerts for unresolved states
 - Database-enforced product rules
+- Demo data for evaluation
 
 Outcome:
 
 A working system capable of supporting day-to-day scheduling in a single clinic.
 
-Status: Complete.
+Success Signals:
+
+- Doctors can log in and see personal daily schedules
+- Appointments are managed end-to-end (create, reschedule, complete, cancel)
+- Scheduling conflicts are prevented by the system (no overlaps, no booking outside availability)
+- Unassigned appointments are surfaced via persistent alerts
+- Staff deactivation triggers automatic reassignment flow
+- Demo data validates full operational flow across all pages
+
+Status: Complete (28/28 stories).
 
 ---
 
-## Phase 2 — Usability & Workflow Refinement
+## Phase 2 — Pilot Validation
 
-Goal: improve efficiency of daily operations.
+Goal: validate product hypothesis with real clinics.
+
+Activities:
+
+- Onboard 1–3 pilot clinics
+- Observe real scheduling behavior
+- Collect qualitative feedback
+- Identify friction points and missing capabilities
+
+Key Questions:
+
+- Do doctors stop using Google Calendar?
+- Is the system used daily?
+- Does it reduce scheduling confusion?
+- Which workflows cause the most friction?
+
+Success Signals:
+
+- A doctor creates 10+ appointments in the system
+- Uses the system on 5+ working days
+- Stops maintaining a parallel Google Calendar
+- Qualitative feedback: "this is clearer than what we had before"
+
+---
+
+## Phase 3 — Usability & Workflow Refinement
+
+Goal: improve efficiency of daily operations based on pilot feedback.
 
 Planned capabilities:
 
 - faster scheduling interactions
-- improved visual schedule navigation
+- improved visual schedule navigation (weekly view, drag-and-drop)
 - bulk operations (appointments, availability)
 - clearer operational alerts
 - reduced friction in reassignment flows
+
+Success Signals:
+
+- Reduced time-to-complete for common tasks (create appointment, reschedule)
+- Fewer user complaints about navigation
+- Staff can complete a full working day using only the system
 
 Focus:
 
@@ -46,7 +103,7 @@ Making the system comfortable for real-world usage by clinic staff.
 
 ---
 
-## Phase 3 — Multi-Clinic Readiness
+## Phase 4 — Multi-Clinic Readiness
 
 Goal: support multiple practices and shared staff.
 
@@ -57,9 +114,15 @@ Planned capabilities:
 - centralized administration
 - refined permission model
 
+Success Signals:
+
+- A clinic group can manage 2+ locations from one dashboard
+- Shared staff can view schedules across clinics
+- Admin permissions scale without manual configuration
+
 ---
 
-## Phase 4 — Patient Engagement (Future)
+## Phase 5 — Patient Engagement (Future)
 
 Goal: extend product beyond internal operations.
 
@@ -70,15 +133,33 @@ Planned capabilities:
 - patient self-service (optional)
 - marketing communication channels
 
-These features are intentionally deferred until core operations are stable.
+These features are intentionally deferred until core operations are validated with real clinics.
 
 ---
 
-## Guiding Principles
+## Phase 6 — Post-Validation Decision
 
-- Operational stability before growth
-- Explicit workflows over automation magic
-- Product clarity before feature expansion
-- Real usage before optimization
+Based on real usage data and pilot feedback, the team decides:
+
+- Iterate on UX based on feedback
+- Add patient self-booking
+- Introduce basic analytics
+- Explore pricing and monetization
+- Pivot based on learning
+
+This phase exists to prevent premature scaling. Direction is determined by observed behavior, not assumptions.
+
+---
+
+## MVP Completion Criteria
+
+The MVP is considered successful if:
+
+- Doctors use the system as their primary scheduling tool
+- Appointments are managed end-to-end without external tools
+- Google Calendar is no longer required for daily scheduling
+- Users report improved clarity and control over their workday
+
+Failure to reach these signals triggers reassessment of product direction.
 
 ---

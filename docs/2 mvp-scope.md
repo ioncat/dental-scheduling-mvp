@@ -93,6 +93,50 @@ The MVP focuses on operational clarity, not growth features.
 
 ---
 
+## Key User Flows
+
+### Doctor starts the day
+
+1. Opens /schedule
+2. Sees daily grid with all appointments for the day
+3. Reviews upcoming visits (patient name, time, status)
+4. Handles appointments during the day
+5. Marks completed visits manually
+
+---
+
+### Creating an appointment
+
+1. Click on a free time slot in the schedule grid
+2. Select patient from the patient registry
+3. Select doctor (or leave unassigned)
+4. Confirm time range
+5. Add notes (optional)
+6. Save — appointment status becomes "scheduled"
+
+---
+
+### Handling cancellation
+
+1. Open existing appointment
+2. Click cancel
+3. Confirm cancellation
+4. Status becomes "cancelled", time slot is freed
+
+---
+
+### Doctor becomes unavailable
+
+1. Admin deactivates a doctor (sick leave, termination)
+2. All future appointments for that doctor automatically become unassigned
+3. Alert banner appears on schedule page for admin / clinic manager
+4. Admin manually reassigns each appointment to another doctor
+5. Alert disappears when all appointments are reassigned
+
+This flow is a core operational scenario, not an edge case.
+
+---
+
 ## Explicitly Out of Scope
 
 These are intentionally deferred:
