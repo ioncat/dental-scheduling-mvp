@@ -221,6 +221,7 @@ Given I do NOT check the checkbox
 Then only the practice and admin account are created (current behavior)
 
 ### Demo Data Set
+- Practice: clinic_name "D-Spot", slogan "Satisfaction Guaranteed", show_on_main = true
 - 3 staff members: 2 doctors (Ukrainian names, Latin script), 1 clinic_manager
 - 12 patients with international names and varied contact details
 - 21 scheduled/completed/cancelled appointments + 2 unassigned (relative to current week)
@@ -232,6 +233,10 @@ Then only the practice and admin account are created (current behavior)
 - Checkbox on `/setup` page, calls RPC after `bootstrap_practice()` if checked
 - Appointments are relative to `current_date` so they always look current
 - All data respects DB triggers (availability enforcement, overlap prevention, UTC)
+- Practice fields `slogan` (text) and `show_on_main` (boolean) added to schema
+- When `show_on_main = true`, header displays clinic name + slogan centered
+- Settings page: Slogan field + "Show on main page" checkbox under Clinic Name
+- TopBar: live clock (date + time, updates every 60s) on the left
 
 ---
 

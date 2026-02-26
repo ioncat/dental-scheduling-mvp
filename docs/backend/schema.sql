@@ -14,6 +14,8 @@ create type time_off_type as enum ('vacation', 'sick', 'blocked');
 create table practice (
     id uuid primary key default uuid_generate_v4(),
     clinic_name text not null,
+    slogan text,
+    show_on_main boolean not null default false,
     address text,
     phone_number text,
     contact_email text,

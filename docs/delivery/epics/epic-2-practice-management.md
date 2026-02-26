@@ -12,11 +12,13 @@ Given I am admin
 When I open Settings  
 Then I see editable fields:
 - clinic_name
+- slogan
+- show_on_main (checkbox — display name + slogan in header)
 - address
 - phone_number
 - contact_email
 - time_zone
-- date_format  
+- date_format
 
 Given I modify fields and click Save  
 Then changes are persisted  

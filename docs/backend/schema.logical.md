@@ -8,6 +8,8 @@ Represents single clinic (tenant).
 
 - id (uuid, PK)
 - clinic_name (text)
+- slogan (text, nullable) — clinic tagline
+- show_on_main (boolean, default false) — display name + slogan in header
 - address (text)
 - phone_number (text)
 - contact_email (text)
