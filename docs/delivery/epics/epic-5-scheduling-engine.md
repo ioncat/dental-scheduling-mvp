@@ -18,7 +18,7 @@ Then all doctors appointments shown
 
 ---
 
-## Story 5.2 — Navigate Schedule by Day (MVP)
+## Story 5.2 — Navigate Schedule by Day (Done)
 
 ### User Story
 As Staff
@@ -34,7 +34,7 @@ Then the schedule displays appointments for the selected date
 - Daily column view: one column per active doctor with appointments
 - Doctor role sees only their own column
 - Admin/clinic_manager sees all doctor columns
-- Weekly view deferred to post-MVP
+- Weekly view deferred — daily view covers MVP needs; revisit after demo data evaluation
 
 ---
 
