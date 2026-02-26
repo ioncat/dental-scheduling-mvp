@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -23,6 +24,8 @@ export function PracticeSettingsForm({ practiceId }: PracticeSettingsFormProps) 
   const updatePractice = useUpdatePractice()
 
   const [clinicName, setClinicName] = useState('')
+  const [slogan, setSlogan] = useState('')
+  const [showOnMain, setShowOnMain] = useState(false)
   const [address, setAddress] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -32,6 +35,8 @@ export function PracticeSettingsForm({ practiceId }: PracticeSettingsFormProps) 
   useEffect(() => {
     if (practice) {
       setClinicName(practice.clinic_name)
+      setSlogan(practice.slogan ?? '')
+      setShowOnMain(practice.show_on_main)
       setAddress(practice.address ?? '')
       setPhone(practice.phone_number ?? '')
       setEmail(practice.contact_email ?? '')
@@ -47,6 +52,8 @@ export function PracticeSettingsForm({ practiceId }: PracticeSettingsFormProps) 
     await updatePractice.mutateAsync({
       id: practiceId,
       clinic_name: clinicName.trim(),
+      slogan: slogan.trim() || null,
+      show_on_main: showOnMain,
       address: address.trim() || null,
       phone_number: phone.trim() || null,
       contact_email: email.trim() || null,
@@ -82,6 +89,27 @@ export function PracticeSettingsForm({ practiceId }: PracticeSettingsFormProps) 
               onChange={(e) => setClinicName(e.target.value)}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="slogan">Slogan</Label>
+            <Input
+              id="slogan"
+              value={slogan}
+              onChange={(e) => setSlogan(e.target.value)}
+              placeholder="Your clinic tagline"
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="showOnMain"
+              checked={showOnMain}
+              onCheckedChange={(checked) => setShowOnMain(checked === true)}
+            />
+            <Label htmlFor="showOnMain" className="cursor-pointer">
+              Show on main page
+            </Label>
           </div>
 
           <div className="space-y-2">

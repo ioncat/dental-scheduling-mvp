@@ -203,7 +203,7 @@ And I see a success confirmation
 
 ---
 
-## Story 1.7 — Demo Data on First Launch (Backlog)
+## Story 1.7 — Demo Data on First Launch (Done)
 
 ### User Story
 As a person evaluating the system
@@ -212,32 +212,26 @@ So that I can immediately explore the interface with realistic content.
 
 ### Acceptance Criteria
 Given I am on the /setup page
-When I check "Enable Demo Data"
+When I check "Populate with demo data"
 And complete the setup
 Then the system creates the practice and admin account as usual
 And additionally populates the database with demo staff, patients, appointments, and availability
 
-Given I do NOT check "Enable Demo Data"
+Given I do NOT check the checkbox
 Then only the practice and admin account are created (current behavior)
 
 ### Demo Data Set
-- 3–4 staff members (2 doctors, 1 clinic_manager)
-- 10–15 patients with varied contact details
-- 20–30 appointments spread across the current and next week (mix of scheduled, completed, cancelled, unassigned)
-- Weekly availability slots for each doctor
-- 1–2 time-off entries
+- 3 staff members: 2 doctors (Ukrainian names, Latin script), 1 clinic_manager
+- 12 patients with international names and varied contact details
+- 21 scheduled/completed/cancelled appointments + 2 unassigned (relative to current week)
+- Availability: Mon–Fri 10:00–19:00, Sat 10:00–15:00 for both doctors
+- 1 time-off entry (vacation)
 
-### Notes for Engineering
-- Add checkbox to setup.tsx: "Populate with demo data" (default: unchecked)
-- Create `seed_demo_data(practice_id)` RPC (security definer) that inserts all demo records
-- Call it after `bootstrap_practice()` if the flag is checked
-- Demo staff should have real-looking names but @example.com emails (non-deliverable)
-- Demo appointments should be relative to `now()` so they always look current
-- Consider adding a `is_demo` boolean to practice table for future "Reset Demo" feature
-
-### Edge Cases
-- Demo data should not conflict with the admin account created during setup
-- Re-running setup on an already-bootstrapped system is blocked (existing guard)
+### Implementation
+- `seed_demo_data(p_practice_id uuid)` — RPC, security definer, in `docs/backend/seed-demo.sql`
+- Checkbox on `/setup` page, calls RPC after `bootstrap_practice()` if checked
+- Appointments are relative to `current_date` so they always look current
+- All data respects DB triggers (availability enforcement, overlap prevention, UTC)
 
 ---
 

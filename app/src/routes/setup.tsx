@@ -4,9 +4,10 @@ import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-type SetupState = 'form' | 'loading' | 'success' | 'error'
+type SetupState = 'form' | 'loading' | 'seeding' | 'success' | 'error'
 
 export default function SetupPage() {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ export default function SetupPage() {
   const [clinicName, setClinicName] = useState('')
   const [adminName, setAdminName] = useState('')
   const [adminEmail, setAdminEmail] = useState('')
+  const [enableDemo, setEnableDemo] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -25,7 +27,7 @@ export default function SetupPage() {
     setErrorMsg('')
 
     // 1. Create practice + admin in DB
-    const { error: bootstrapError } = await supabase.rpc('bootstrap_practice', {
+    const { data: bootstrapData, error: bootstrapError } = await supabase.rpc('bootstrap_practice', {
       p_clinic_name: clinicName.trim(),
       p_admin_name: adminName.trim(),
       p_admin_email: adminEmail.trim(),
@@ -37,7 +39,19 @@ export default function SetupPage() {
       return
     }
 
-    // 2. Send magic link to admin email
+    // 2. Seed demo data if checkbox was checked
+    if (enableDemo && bootstrapData?.practice_id) {
+      setState('seeding')
+      const { error: seedError } = await supabase.rpc('seed_demo_data', {
+        p_practice_id: bootstrapData.practice_id,
+      })
+      if (seedError) {
+        setErrorMsg(`Clinic created, but demo data failed: ${seedError.message}`)
+        // Continue — practice is already set up
+      }
+    }
+
+    // 3. Send magic link to admin email
     const { error: otpError } = await supabase.auth.signInWithOtp({
       email: adminEmail.trim(),
     })
@@ -75,6 +89,8 @@ export default function SetupPage() {
     )
   }
 
+  const loadingText = state === 'seeding' ? 'Populating demo data...' : 'Setting up...'
+
   return (
     <div className="flex h-screen items-center justify-center bg-background">
       <Card className="w-[460px]">
@@ -93,7 +109,7 @@ export default function SetupPage() {
                 placeholder="My Dental Clinic"
                 value={clinicName}
                 onChange={(e) => setClinicName(e.target.value)}
-                disabled={state === 'loading'}
+                disabled={state === 'loading' || state === 'seeding'}
               />
             </div>
 
@@ -104,7 +120,7 @@ export default function SetupPage() {
                 placeholder="Dr. Smith"
                 value={adminName}
                 onChange={(e) => setAdminName(e.target.value)}
-                disabled={state === 'loading'}
+                disabled={state === 'loading' || state === 'seeding'}
               />
             </div>
 
@@ -116,8 +132,25 @@ export default function SetupPage() {
                 placeholder="admin@clinic.com"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                disabled={state === 'loading'}
+                disabled={state === 'loading' || state === 'seeding'}
               />
+            </div>
+
+            <div className="flex items-start gap-3 rounded-md border p-3">
+              <Checkbox
+                id="enableDemo"
+                checked={enableDemo}
+                onCheckedChange={(checked) => setEnableDemo(checked === true)}
+                disabled={state === 'loading' || state === 'seeding'}
+              />
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="enableDemo" className="cursor-pointer font-medium">
+                  Populate with demo data
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Creates sample staff, patients, and appointments for evaluation
+                </p>
+              </div>
             </div>
 
             {state === 'error' && (
@@ -126,9 +159,9 @@ export default function SetupPage() {
 
             <Button
               type="submit"
-              disabled={state === 'loading' || !clinicName.trim() || !adminName.trim() || !adminEmail.trim()}
+              disabled={state === 'loading' || state === 'seeding' || !clinicName.trim() || !adminName.trim() || !adminEmail.trim()}
             >
-              {state === 'loading' ? 'Setting up...' : 'Create Clinic & Send Magic Link'}
+              {state === 'loading' || state === 'seeding' ? loadingText : 'Create Clinic & Send Magic Link'}
             </Button>
           </form>
         </CardContent>

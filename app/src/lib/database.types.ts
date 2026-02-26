@@ -10,6 +10,8 @@ export type TimeOffType = 'vacation' | 'sick' | 'blocked'
 export interface Practice {
   id: string
   clinic_name: string
+  slogan: string | null
+  show_on_main: boolean
   address: string | null
   phone_number: string | null
   contact_email: string | null

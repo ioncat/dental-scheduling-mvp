@@ -23,7 +23,7 @@ export function AppLayout() {
         <SidebarNav role={role} staffName={staff?.full_name ?? null} />
       </aside>
       <div className="flex flex-1 flex-col overflow-hidden">
-        <TopBar />
+        <TopBar practiceId={staff?.practice_id} />
         <main className="flex-1 overflow-auto p-6">
           <Outlet />
         </main>

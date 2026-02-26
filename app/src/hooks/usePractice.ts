@@ -17,7 +17,7 @@ export function usePractice(id: string | undefined) {
 export function useUpdatePractice() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Pick<Practice, 'clinic_name' | 'address' | 'phone_number' | 'contact_email' | 'time_zone' | 'date_format'>>) => {
+    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Pick<Practice, 'clinic_name' | 'slogan' | 'show_on_main' | 'address' | 'phone_number' | 'contact_email' | 'time_zone' | 'date_format'>>) => {
       const { data, error } = await updatePractice(id, updates)
       if (error) throw error
       return data
