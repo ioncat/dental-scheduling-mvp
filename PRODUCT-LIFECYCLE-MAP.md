@@ -79,6 +79,26 @@ Turning scope into delivery-ready artifacts and a working application.
 ## System Design
 How the product works as a system.
 
+### Architecture Overview
+
+```
+Browser (SPA)
+    |
+    v
+Frontend Application (React + TypeScript)
+    |  Supabase client, RPC calls, real-time subscriptions
+    v
+Supabase Platform
+    |-- Auth (Magic Link, Google OAuth)
+    |-- PostgreSQL Database
+    |     |-- Row-Level Security (practice-scoped)
+    |     |-- Triggers (business rule enforcement)
+    |     |-- Security Definer Functions (RLS helpers)
+    |-- Storage (future)
+```
+
+Core business rules are enforced at database level (triggers + RLS), not in UI code. The frontend validates for UX but the database is the source of truth.
+
 | Document | Purpose |
 |----------|---------|
 | [System Context](docs/system/system-context.md) | System boundaries and actors |

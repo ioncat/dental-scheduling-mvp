@@ -1,20 +1,21 @@
-# Dental Scheduling MVP  
-End-to-End Product Case → Executable System
+# Dental Appointment / Scheduling MVP
+> End-to-end Product Owner case (Discovery > MVP > Delivery > System Design)
 
-This repository represents a complete Product Owner / Product Manager case that evolved into a working product.
+This repository contains a complete product case for an MVP dental appointment scheduling platform.
 
-It started as a product discovery and specification exercise  
-and continues as a real system implementation.
+It represents a full Product Owner / Product Manager workflow — from problem discovery and MVP scoping to delivery artifacts and system design.
 
-This is not a coding demo.
+The product is designed to replace Google Calendar as the primary scheduling tool for small dental clinics.
 
-This is a product brought to life.
+This is not a theoretical exercise — the MVP has been fully implemented and is ready for user testing.
 
 ---
 
 ## What This Project Is
 
-An operational scheduling system for dental clinics covering:
+Small dental clinics often use Google Calendar to manage appointments.
+
+While convenient, Google Calendar lacks:
 
 - staff lifecycle (admin / doctor / clinic manager)
 - patient lifecycle (create / archive / restore)
@@ -23,7 +24,11 @@ An operational scheduling system for dental clinics covering:
 - role-based access
 - database-enforced business rules
 
-The product was designed first at product level (vision, scope, roadmap, decisions)  
+As a result, clinics may experience scheduling chaos and rely on manual coordination.
+
+This project explores whether dentists would adopt a purpose-built scheduling system if it provided clarity, control, and operational simplicity.
+
+The product was designed first at product level (vision, scope, roadmap, decisions)
 and only then translated into system architecture and implementation.
 
 ---
@@ -32,11 +37,11 @@ and only then translated into system architecture and implementation.
 
 This project intentionally shows the full product loop:
 
-Product discovery  
-→ domain modeling  
-→ delivery planning  
-→ system architecture  
-→ working application  
+Product discovery
+> domain modeling
+> delivery planning
+> system architecture
+> working application
 
 Most repositories show either documentation or code.
 
@@ -46,56 +51,44 @@ Architecture here is not speculative — it directly follows product decisions.
 
 ---
 
-## Where to Start (Recommended Reading Order)
+## MVP Goal
 
-If you only have a few minutes:
+Validate **Value + Adoption**.
 
-1. Executive Summary — product context and goals  
-2. Domain Contract — canonical product definition  
-3. Delivery Epics — how the product is broken down  
-4. System Context — high-level technical view  
+Specifically:
 
-These provide the fastest understanding of both the product thinking and its execution.
+Determine whether doctors are willing to replace Google Calendar with a dedicated scheduling platform for daily operations.
 
 ---
 
-## High-Level System View
+## Where to Start
 
+Recommended reading order:
 
-Browser (Single Page Application)
-↓
-Frontend Application
-↓
-Backend Platform (Postgres + Auth + Access Control)
+1. [Executive Summary](docs/0%20executive-summary.md) — product context and goals
+2. [Domain Contract](docs/contracts/domain-ui.md) — canonical product definition
+3. [Delivery Epics](docs/delivery/epics/) — how the product is broken down
+4. [System Context](docs/system/system-context.md) — high-level technical view
 
-
-Core business rules are enforced at database level rather than in UI code.
+For a structured view of how this case moves from Discovery to Working Product, see:
+[Product Lifecycle Map](PRODUCT-LIFECYCLE-MAP.md)
 
 ---
 
 ## Project Status
 
-The product definition and backend contracts are complete.
+**MVP complete — 28/28 stories implemented.**
 
-The project is currently in the implementation phase, focusing on UI assembly and frontend integration.
+The application supports end-to-end clinic workflows: staff management, patient lifecycle, appointment scheduling with availability enforcement, role-based access control, and demo data for immediate evaluation.
 
----
-
-## Author Note
-
-This repository intentionally demonstrates:
-
-- product discovery and framing  
-- domain-driven thinking  
-- architectural translation of product decisions  
-- delivery breakdown  
-- and execution  
-
-as a single continuous process.
-
-It started as a Product Manager case study and is being developed into a real application.
-
-Alex Bondarenko  
+See [Quick Start](app/QUICK-START.md) to install and run the application.
 
 ---
 
+## Author
+
+Alex Bondarenko — Product Owner / Product Manager
+
+[GitHub](https://github.com/alexbondarenko) · [LinkedIn](https://linkedin.com/in/alexbondarenko)
+
+---
