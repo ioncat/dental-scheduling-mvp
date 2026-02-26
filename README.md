@@ -89,6 +89,6 @@ See [Quick Start](app/QUICK-START.md) to install and run the application.
 
 Alex Bondarenko — Product Owner / Product Manager
 
-[GitHub](https://github.com/alexbondarenko) · [LinkedIn](https://linkedin.com/in/alexbondarenko)
+[GitHub](https://github.com/ioncat/) · [LinkedIn](https://www.linkedin.com/in/alexibondarenko/)
 
 ---
