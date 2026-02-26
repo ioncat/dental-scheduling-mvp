@@ -122,7 +122,7 @@ export function TimeOffList({ staffId, canEdit }: TimeOffListProps) {
                     <div className="text-sm">
                       {start.toLocaleDateString()} — {end.toLocaleDateString()}
                     </div>
-                    <Badge className={typeColors[entry.type]} variant="secondary">
+                    <Badge className={typeColors[entry.type as TimeOffType]} variant="secondary">
                       {entry.type}
                     </Badge>
                   </div>

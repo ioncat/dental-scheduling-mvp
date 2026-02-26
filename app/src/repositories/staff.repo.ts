@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Staff, StaffRole, StaffStatus } from '@/lib/database.types'
+import type { StaffRole, StaffStatus } from '@/lib/database.types'
 
 export interface CreateStaffPayload {
   practice_id: string

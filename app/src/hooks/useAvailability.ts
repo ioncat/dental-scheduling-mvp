@@ -56,7 +56,7 @@ export function useUpdateAvailability() {
 export function useDeleteAvailability() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, staffId }: { id: string; staffId: string }) => {
+    mutationFn: async ({ id, staffId: _staffId }: { id: string; staffId: string }) => {
       const { error } = await deleteAvailability(id)
       if (error) throw error
     },
@@ -97,7 +97,7 @@ export function useCreateTimeOff() {
 export function useDeleteTimeOff() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, staffId }: { id: string; staffId: string }) => {
+    mutationFn: async ({ id, staffId: _staffId }: { id: string; staffId: string }) => {
       const { error } = await deleteTimeOff(id)
       if (error) throw error
     },

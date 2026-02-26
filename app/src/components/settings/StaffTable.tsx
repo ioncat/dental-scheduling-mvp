@@ -174,7 +174,7 @@ export function StaffTable() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={statusColors[member.status]} variant="secondary">
+                    <Badge className={statusColors[member.status as StaffStatus]} variant="secondary">
                       {member.status}
                     </Badge>
                   </TableCell>

@@ -63,6 +63,33 @@ If you already completed setup without demo data, run in SQL Editor:
 select seed_demo_data((select id from practice limit 1));
 ```
 
+## Docker
+
+### Prerequisites
+
+- Docker and Docker Compose
+
+### Steps
+
+1. Copy `.env.example` to `.env` and fill in your Supabase credentials:
+
+```bash
+cp .env.example .env
+# Edit .env with your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+```
+
+2. Build and start the container:
+
+```bash
+docker compose up --build
+```
+
+3. Open **http://localhost:3000**
+
+The Docker image uses a multi-stage build (Node.js for build, Nginx for serving) and includes security headers, gzip compression, and a health check. Final image size is ~25 MB.
+
+---
+
 ## Tech Stack
 
 - **Vite 6** + **React 19** + **TypeScript 5**
