@@ -102,9 +102,9 @@ The dentist is the primary user because:
 - they need a clear, predictable daily workload,
 - in small clinics, the dentist often also acts as a clinic manager.
 
-### Secondary Users (MVP scope-aware)
+### Secondary Users
 - Clinic Manager / Receptionist (may overlap with Doctor role)
-- Patient (limited interaction in MVP)
+- Patient (not a system user in MVP — managed as data entity)
 
 ---
 

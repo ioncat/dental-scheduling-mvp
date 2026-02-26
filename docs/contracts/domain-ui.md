@@ -37,6 +37,8 @@ Visible in Settings (admin only).
 
 Fields:
 - clinic_name
+- slogan
+- show_on_main (boolean — display clinic name + slogan in header)
 - address
 - phone_number
 - contact_email
@@ -146,8 +148,7 @@ Fields:
 - notes
 
 Primary View:
-- Schedule (daily)
-- Weekly view via doctor selector
+- Schedule (daily view)
 
 Modal:
 - Appointment details
@@ -227,11 +228,16 @@ Applies only to active staff.
 
 ## Pages
 
+/setup
+- First-launch bootstrap (create practice + admin)
+- Optional demo data population
+
 /login
+- Magic link authentication
+- Google OAuth (optional, requires Supabase config)
 
 /schedule
 - Daily view (all doctors)
-- Weekly view via doctor selector
 - Shows booked + free slots
 - Unassigned appointments highlighted
 - Admin / clinic_manager see alert:
@@ -260,7 +266,7 @@ Applies only to active staff.
   - phone
   - role
 
-Password management handled by Supabase Auth.
+Authentication handled by Supabase Auth (Magic Link + Google OAuth).
 
 ---
 

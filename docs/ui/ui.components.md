@@ -24,12 +24,15 @@ Contains:
 
 ### SidebarNav
 
-Items:
+Top section:
 - Schedule
 - Patients
 - Availability
 - Settings (admin only)
+
+Bottom section:
 - Account
+- Sign Out
 
 Props:
 - role
@@ -39,8 +42,12 @@ Props:
 ### TopBar
 
 Elements:
-- Current date selector
-- User name
+- Left: current date + live clock
+- Center: clinic name + slogan (conditional on practice.show_on_main)
+- Right: user name
+
+Props:
+- practiceId
 
 ---
 
@@ -51,9 +58,29 @@ Elements:
 Fields:
 - email
 
+Auth methods:
+- Magic Link (email OTP)
+- Google OAuth (optional, requires Supabase config)
+
 States:
 - idle
 - loading
+- success
+- error
+
+---
+
+### SetupForm
+
+Fields:
+- practice name
+- admin email
+- enable demo data (checkbox)
+
+States:
+- idle
+- loading
+- seeding (demo data)
 - success
 - error
 
@@ -212,6 +239,8 @@ Tabs:
 
 Editable:
 - clinic_name
+- slogan
+- show_on_main (checkbox)
 - address
 - phone
 - email

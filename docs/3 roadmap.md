@@ -24,7 +24,7 @@ Outcome:
 
 A working system capable of supporting day-to-day scheduling in a single clinic.
 
-Status: In progress.
+Status: Complete.
 
 ---
 

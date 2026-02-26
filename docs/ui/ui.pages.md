@@ -4,18 +4,46 @@ Design fidelity: B (clean product UI, functional, minimal polish)
 
 ---
 
-## /login
+## /setup
 
 Purpose:
-Authenticate staff via magic link.
+First-launch bootstrap — create practice and admin account.
 
 Blocks:
-- Email input
+- Practice name input
+- Admin email input
+- Demo data checkbox (optional — populates sample staff, patients, appointments)
 - Submit button
 - Loading / success / error states
 
 Actions:
+- Bootstrap practice via RPC
+- Optionally seed demo data
+
+Rules:
+- Only accessible when system is not yet bootstrapped
+- After success redirect to /login
+
+Data:
+- bootstrap_practice RPC
+- seed_demo_data RPC (optional)
+
+---
+
+## /login
+
+Purpose:
+Authenticate staff via magic link or Google OAuth.
+
+Blocks:
+- Email input
+- Submit button (magic link)
+- Google sign-in button (optional, requires Supabase config)
+- Loading / success / error states
+
+Actions:
 - Request magic link
+- Sign in with Google
 
 Rules:
 - Only staff with status=active can proceed
@@ -148,6 +176,16 @@ Tabs:
 Blocks:
 - Practice form
 
+Fields:
+- clinic_name
+- slogan
+- show_on_main (checkbox — display name + slogan in header)
+- address
+- phone
+- email
+- timezone
+- date_format
+
 Actions:
 - Update practice fields
 
@@ -207,8 +245,9 @@ Data:
   - Account
 
 - Top bar:
-  - Current date
-  - User name
+  - Left: current date + time (live clock)
+  - Center: clinic name + slogan (when show_on_main enabled)
+  - Right: user name
 
 ---
 

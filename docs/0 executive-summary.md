@@ -52,8 +52,8 @@ The project followed a contract-driven product approach:
 2. Domain modeling  
 3. Delivery planning via epics and stories  
 4. System architecture derived from product decisions  
-5. Implementation of backend contracts  
-6. Frontend assembly in progress  
+5. Implementation of backend contracts
+6. Frontend implementation — complete
 
 Each step builds directly on the previous one.
 
@@ -69,8 +69,8 @@ The result is a cohesive product system including:
 - delivery-ready epics  
 - database-enforced business rules  
 - role-based access control  
-- UI specifications  
-- and an actively developed frontend  
+- UI specifications
+- and a complete working frontend
 
 This repository demonstrates how product decisions can be translated into executable constraints rather than remaining abstract documentation.
 

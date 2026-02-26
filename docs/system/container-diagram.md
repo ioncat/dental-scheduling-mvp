@@ -1,1 +1,24 @@
-flowchart LR    User[(Admin / Doctor / Clinic Manager)]    subgraph Browser["Browser"]        SPA[(Frontend UI)]    end    subgraph Backend["Backend Platform"]        Auth[Authentication]        DB[(PostgreSQL Database)]        RLS[Row Level Security]        Triggers[Domain Triggers]    end    User --> SPA    SPA --> Auth    SPA --> DB    Auth --> DB    DB --> RLS    DB --> Triggers
+```mermaid
+flowchart LR
+
+    User[(Admin / Doctor / Clinic Manager)]
+
+    subgraph Browser["Browser"]
+        SPA[(Frontend UI)]
+    end
+
+    subgraph Backend["Backend Platform"]
+        Auth[Authentication]
+        DB[(PostgreSQL Database)]
+        RLS[Row Level Security]
+        Triggers[Domain Triggers]
+    end
+
+    User --> SPA
+    SPA --> Auth
+    SPA --> DB
+
+    Auth --> DB
+    DB --> RLS
+    DB --> Triggers
+```

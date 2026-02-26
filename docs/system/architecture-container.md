@@ -23,7 +23,7 @@ Query --> Repos
 Repos --> Supabase[Supabase Platform]
 
 subgraph Supabase
-Auth[Auth\nMagic Link]
+Auth[Auth\nMagic Link + Google OAuth]
 Postgres[(PostgreSQL)]
 RLS[RLS Policies]
 Triggers[Domain Triggers]

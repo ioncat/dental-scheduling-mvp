@@ -1,8 +1,10 @@
 # UI Implementation Plan (Based on Specification)
 
+> **Status: Complete.** All 8 phases have been implemented. 28/28 user stories delivered. This document is preserved as a historical artifact showing the incremental build strategy.
+
 ## Context
 
-Product documentation defines 27 user stories, 7 pages, ~25 components, and 5 repositories. Current code implements ~5%: minimal login, JSON-dump schedule, 1 untyped repo. No build tooling exists (package.json, vite.config, tsconfig are missing). Supabase backend is deployed and running. Routing approach: code-based (manual router.tsx).
+Product documentation defines 28 user stories, 8 pages, ~25 components, and 5 repositories. Supabase backend is deployed and running. Routing approach: code-based (manual router.tsx).
 
 Goal: incrementally build the frontend from foundation to full MVP, following `ui.pages.md`, `ui.components.md`, and `domain-ui.md` specifications.
 

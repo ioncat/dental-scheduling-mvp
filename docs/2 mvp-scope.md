@@ -61,7 +61,7 @@ The MVP focuses on operational clarity, not growth features.
 - complete appointments
 - explicit unassigned state
 - manual reassignment
-- daily and weekly schedule views
+- daily schedule view
 
 ---
 
