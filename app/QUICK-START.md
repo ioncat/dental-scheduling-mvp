@@ -2,36 +2,54 @@
 
 ## Prerequisites
 
-- **Node.js** 18+ and npm
+- **Node.js** 20+ and npm (for local development) or **Docker** (for containerized run)
 - **Supabase** project (free tier works) — [supabase.com](https://supabase.com)
 
 ## 1. Set Up the Database
 
 1. Create a new Supabase project (or use an existing one)
 2. Open **SQL Editor** in the Supabase Dashboard
-3. Copy the contents of `../docs/backend/init-all.sql` and execute it
+3. Copy the contents of `docs/backend/init-all.sql` (from project root) and execute it
    - This creates all tables, triggers, RLS policies, and the demo data function
 
 ## 2. Configure Environment
 
-Create a file `app/.env.local`:
+Copy the template and fill in your Supabase credentials:
+
+```bash
+cd app
+cp .env.example .env
+```
+
+Edit `.env`:
 
 ```env
 VITE_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-You can find these values in Supabase Dashboard > Settings > API.
+You can find these values in **Supabase Dashboard > Settings > API**.
 
-## 3. Install and Run
+## 3. Run the App
+
+### Option A — Local Development
 
 ```bash
-cd app
 npm install
 npm run dev
 ```
 
 The app opens at **http://localhost:5173**.
+
+### Option B — Docker
+
+```bash
+docker compose up --build
+```
+
+The app opens at **http://localhost:3000**.
+
+The Docker image uses a multi-stage build (Node.js for build, Nginx for serving) and includes security headers, gzip compression, and a health check. Final image size is ~25 MB.
 
 ## 4. First Launch Setup
 
@@ -62,31 +80,6 @@ If you already completed setup without demo data, run in SQL Editor:
 ```sql
 select seed_demo_data((select id from practice limit 1));
 ```
-
-## Docker
-
-### Prerequisites
-
-- Docker and Docker Compose
-
-### Steps
-
-1. Copy `.env.example` to `.env` and fill in your Supabase credentials:
-
-```bash
-cp .env.example .env
-# Edit .env with your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
-```
-
-2. Build and start the container:
-
-```bash
-docker compose up --build
-```
-
-3. Open **http://localhost:3000**
-
-The Docker image uses a multi-stage build (Node.js for build, Nginx for serving) and includes security headers, gzip compression, and a health check. Final image size is ~25 MB.
 
 ---
 
