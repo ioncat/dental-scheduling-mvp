@@ -10,8 +10,7 @@
 -- PART 1: SCHEMA (tables, types, indexes)
 ------------------------------------------------------------
 
--- Enable UUID generation
-create extension if not exists "uuid-ossp";
+-- gen_random_uuid() is built into PostgreSQL 13+ / Supabase — no extension needed
 
 -- ENUMS
 
@@ -24,7 +23,7 @@ create type time_off_type as enum ('vacation', 'sick', 'blocked');
 -- PRACTICE
 
 create table practice (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     clinic_name text not null,
     slogan text,
     show_on_main boolean not null default false,
@@ -40,7 +39,7 @@ create table practice (
 -- STAFF
 
 create table staff (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     practice_id uuid not null references practice(id) on delete cascade,
     full_name text not null,
     email text not null,
@@ -58,7 +57,7 @@ create table staff (
 -- PATIENT
 
 create table patient (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     practice_id uuid not null references practice(id) on delete cascade,
     full_name text not null,
     phone text not null,
@@ -75,7 +74,7 @@ create table patient (
 -- APPOINTMENT
 
 create table appointment (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     practice_id uuid not null references practice(id) on delete cascade,
     patient_id uuid not null references patient(id),
     doctor_id uuid references staff(id),
@@ -91,7 +90,7 @@ create table appointment (
 -- AVAILABILITY
 
 create table availability (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     staff_id uuid not null references staff(id) on delete cascade,
     weekday int not null check (weekday between 0 and 6),
     start_time time not null,
@@ -103,7 +102,7 @@ create table availability (
 -- TIME OFF
 
 create table time_off (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     staff_id uuid not null references staff(id) on delete cascade,
     start_datetime timestamptz not null,
     end_datetime timestamptz not null,
@@ -162,7 +161,7 @@ begin
   returning id into v_practice_id;
 
   insert into staff (id, practice_id, full_name, email, role, status)
-  values (coalesce(v_staff_id, uuid_generate_v4()), v_practice_id, p_admin_name, lower(trim(p_admin_email)), 'admin', 'active');
+  values (coalesce(v_staff_id, gen_random_uuid()), v_practice_id, p_admin_name, lower(trim(p_admin_email)), 'admin', 'active');
 
   return json_build_object('practice_id', v_practice_id);
 end;
