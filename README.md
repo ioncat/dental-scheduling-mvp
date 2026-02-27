@@ -63,15 +63,9 @@ Determine whether doctors are willing to replace Google Calendar with a dedicate
 
 ## Where to Start
 
-Recommended reading order:
-
 1. [Executive Summary](docs/0%20executive-summary.md) — product context and goals
-2. [Domain Contract](docs/contracts/domain-ui.md) — canonical product definition
-3. [Delivery Epics](docs/delivery/epics/) — how the product is broken down
-4. [System Context](docs/system/system-context.md) — high-level technical view
-
-For a structured view of how this case moves from Discovery to Working Product, see:
-[Product Lifecycle Map](PRODUCT-LIFECYCLE-MAP.md)
+2. [Documentation Guide](docs/GUIDE.md) — navigates all 36 documents with reading paths
+3. [Quick Start](app/QUICK-START.md) — install and run the application
 
 ---
 
