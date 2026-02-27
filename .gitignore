@@ -38,3 +38,6 @@ Thumbs.db
 
 # Supabase local
 .supabase/
+
+# Local-only docs (not for repo)
+docs/GUIDE-RU.md
