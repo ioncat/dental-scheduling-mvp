@@ -93,16 +93,16 @@ Alex Bondarenko — Product Owner / Product Manager
 
 ### AI Co-Authors
 
-**ChatGPT 5.2** — product discovery & planning
+**ChatGPT 5.2** — product discovery, planning & system design
 - Problem analysis and hypothesis framing
 - Product vision, MVP scope, roadmap
 - Epic breakdown and user story writing
 - Delivery conventions and decision records
-
-**Claude Code (Opus 4.6)** — architecture & implementation
 - System architecture and database design
-- Frontend development (React, TypeScript, full MVP)
 - Backend contracts (triggers, RLS, RPC functions)
+
+**Claude Code (Opus 4.6)** — development & deployment
+- Frontend development (React, TypeScript, full MVP)
 - Documentation sync and product orientation
 - Docker deployment with production hardening
 
