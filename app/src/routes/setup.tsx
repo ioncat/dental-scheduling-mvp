@@ -21,14 +21,15 @@ export default function SetupPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!clinicName.trim() || !adminName.trim() || !adminEmail.trim()) return
+    const effectiveClinicName = enableDemo ? 'D-Spot' : clinicName.trim()
+    if (!effectiveClinicName || !adminName.trim() || !adminEmail.trim()) return
 
     setState('loading')
     setErrorMsg('')
 
     // 1. Create practice + admin in DB
     const { data: bootstrapData, error: bootstrapError } = await supabase.rpc('bootstrap_practice', {
-      p_clinic_name: clinicName.trim(),
+      p_clinic_name: effectiveClinicName,
       p_admin_name: adminName.trim(),
       p_admin_email: adminEmail.trim(),
     })
@@ -107,9 +108,9 @@ export default function SetupPage() {
               <Input
                 id="clinicName"
                 placeholder="My Dental Clinic"
-                value={clinicName}
+                value={enableDemo ? 'D-Spot' : clinicName}
                 onChange={(e) => setClinicName(e.target.value)}
-                disabled={state === 'loading' || state === 'seeding'}
+                disabled={state === 'loading' || state === 'seeding' || enableDemo}
               />
             </div>
 
@@ -159,7 +160,7 @@ export default function SetupPage() {
 
             <Button
               type="submit"
-              disabled={state === 'loading' || state === 'seeding' || !clinicName.trim() || !adminName.trim() || !adminEmail.trim()}
+              disabled={state === 'loading' || state === 'seeding' || (!enableDemo && !clinicName.trim()) || !adminName.trim() || !adminEmail.trim()}
             >
               {state === 'loading' || state === 'seeding' ? loadingText : 'Create Clinic & Send Magic Link'}
             </Button>

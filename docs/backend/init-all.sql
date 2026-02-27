@@ -145,16 +145,25 @@ create or replace function bootstrap_practice(
 )
 returns json language plpgsql security definer set search_path = 'public'
 as $$
-declare v_practice_id uuid;
+declare
+  v_practice_id uuid;
+  v_staff_id uuid;
 begin
   if exists (select 1 from staff) then
     raise exception 'System is already bootstrapped';
   end if;
+
+  -- If auth user already exists (e.g. after DB reset), reuse their ID
+  -- so that staff.id = auth.uid() and RLS works immediately
+  select id into v_staff_id from auth.users where email = lower(trim(p_admin_email));
+
   insert into practice (clinic_name, time_zone, date_format)
   values (p_clinic_name, p_time_zone, p_date_format)
   returning id into v_practice_id;
-  insert into staff (practice_id, full_name, email, role, status)
-  values (v_practice_id, p_admin_name, lower(trim(p_admin_email)), 'admin', 'active');
+
+  insert into staff (id, practice_id, full_name, email, role, status)
+  values (coalesce(v_staff_id, uuid_generate_v4()), v_practice_id, p_admin_name, lower(trim(p_admin_email)), 'admin', 'active');
+
   return json_build_object('practice_id', v_practice_id);
 end;
 $$;
