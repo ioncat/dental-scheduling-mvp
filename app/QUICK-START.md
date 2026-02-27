@@ -65,13 +65,20 @@ If you checked the demo data option, you get:
 
 | Data | Count | Details |
 |------|-------|---------|
-| Staff | 3 | 2 doctors + 1 clinic manager |
-| Patients | 12 | International names, varied contacts |
-| Appointments | 23 | Mix of scheduled, completed, cancelled, unassigned |
-| Availability | Mon-Sat | Mon-Fri 10:00-19:00, Sat 10:00-15:00 |
-| Time off | 1 | Vacation entry |
+| Staff | 7 | 6 doctors + 1 clinic manager |
+| Patients | 25 | International names, varied contacts |
+| Appointments | ~350 | Spread across 3 weeks with realistic load profiles |
+| Availability | Mon-Sat | Mon-Fri 10:00-19:00, Sat 10:00-15:00 (doctors 1-3) |
+| Time off | 1 | Doctor vacation (Wed-Fri next week) |
+| Unassigned | 3 | For alert banner demonstration |
 
-Appointments are relative to the current week, so they always look current.
+All dates are relative to the current week:
+
+| Week | Load | Statuses |
+|------|------|----------|
+| Previous | 55-65% per doctor | completed, ~5% cancelled |
+| Current | 55% | past = completed, future = scheduled |
+| Next | 25% | all scheduled |
 
 ### Adding Demo Data to an Existing Database
 
