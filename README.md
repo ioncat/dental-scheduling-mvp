@@ -63,9 +63,16 @@ Determine whether doctors are willing to replace Google Calendar with a dedicate
 
 ## Where to Start
 
-1. [Executive Summary](docs/0%20executive-summary.md) — product context and goals
-2. [Documentation Guide](docs/GUIDE.md) — navigates all 36 documents with reading paths
-3. [Quick Start](app/QUICK-START.md) — install and run the application
+Pick the path that fits your goal:
+
+| Goal | Start here | Then |
+|------|-----------|------|
+| **Understand the product** | [Executive Summary](docs/0%20executive-summary.md) | [MVP Scope](docs/2%20mvp-scope.md) → [Domain Contract](docs/contracts/domain-ui.md) |
+| **Review architecture** | [System Context](docs/system/system-context.md) | [Container Diagram](docs/system/container-diagram.md) → [Schema](docs/backend/schema.logical.md) |
+| **See delivery process** | [Dev Plan](docs/delivery/dev-plan-en.md) | [Epics](docs/delivery/epics/) (11 epics, 28 user stories) |
+| **Run the application** | [Quick Start](app/QUICK-START.md) | `npm install` → `npm run dev` → demo data included |
+
+Full navigation across all 36 documents: **[Documentation Guide](docs/GUIDE.md)**
 
 ---
 
