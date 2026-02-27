@@ -66,15 +66,27 @@ End-to-end status flow for appointments — from creation to terminal state.
 
 ## Creation Flow
 
+3-column Calendly-style booking modal:
+
 ```
 Admin/Manager clicks "New Appointment"
   │
-  ├─ Select patient (required)
-  ├─ Select doctor (required)
-  ├─ Set start & end time
-  ├─ Add notes (optional)
+  ├─ Column 1: Form
+  │   ├─ Select patient (required)
+  │   ├─ Select doctor (required) → triggers slot computation
+  │   ├─ Notes (optional)
+  │   └─ Create Appointment button
   │
-  ├─ Validation:
+  ├─ Column 2: Monthly Calendar
+  │   ├─ Navigate ← → between months
+  │   └─ Click a day → loads free slots
+  │
+  ├─ Column 3: Available Time Slots
+  │   ├─ Shows only FREE 1-hour slots (30-min step)
+  │   ├─ Free = availability MINUS appointments MINUS time-off
+  │   └─ Click a slot → fills start/end time
+  │
+  ├─ Validation (enforced by slot computation):
   │   ├─ Doctor has availability for that weekday/time? (R2)
   │   ├─ Doctor not on time off? (R3)
   │   ├─ No overlap with existing appointments? (R1)

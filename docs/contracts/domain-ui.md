@@ -175,10 +175,11 @@ Primary View:
 - Schedule (daily view)
 
 Modal:
-- Appointment details
+- Create mode: 3-column Calendly-style booking (patient+doctor | monthly calendar | free time slots)
+- View mode: Appointment details (single column)
 
 Actions:
-- create
+- create (via slot selection in 3-column modal)
 - reschedule
 - cancel
 - mark completed
@@ -263,7 +264,8 @@ Applies only to active staff.
 /schedule
 - Daily view with doctor columns (one column per active doctor)
 - Date navigation: previous / next day, direct date input, Today button
-- "New Appointment" button (admin / clinic_manager only)
+- "New Appointment" button → opens 3-column Calendly-style booking modal (admin / clinic_manager only)
+- Click on empty time slot → opens booking modal with doctor + time pre-filled
 - Unassigned appointments column (first column, orange pulse animation)
 - Admin / clinic_manager see alert banner:
 

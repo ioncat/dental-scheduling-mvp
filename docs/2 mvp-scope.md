@@ -108,11 +108,15 @@ The MVP focuses on operational clarity, not growth features.
 ### Creating an appointment
 
 1. Admin or clinic manager clicks "New Appointment" button
-2. Selects patient from the patient registry
-3. Selects doctor (required — system validates availability)
-4. Sets start and end time
-5. Adds notes (optional)
-6. Save — appointment status becomes "scheduled"
+2. 3-column Calendly-style modal opens:
+   - Column 1: Select patient, select doctor, add notes
+   - Column 2: Monthly calendar — pick a date
+   - Column 3: Available time slots (free 1-hour slots, 30-min step)
+3. Selects patient from the patient registry
+4. Selects doctor — system computes free slots
+5. Picks a day on the calendar
+6. Clicks a free time slot (only valid slots shown)
+7. Save — appointment status becomes "scheduled"
 
 ---
 

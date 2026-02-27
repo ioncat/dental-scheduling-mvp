@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   Dialog,
   DialogContent,
@@ -13,9 +14,15 @@ import { Badge } from '@/components/ui/badge'
 import { DoctorSelector } from '@/components/shared/DoctorSelector'
 import { PatientPickerModal } from '@/components/shared/PatientPickerModal'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { MiniCalendar } from '@/components/schedule/MiniCalendar'
+import { AvailableSlotsList } from '@/components/schedule/AvailableSlotsList'
 import { useCreateAppointment, useUpdateAppointment } from '@/hooks/useAppointments'
 import { useAvailability, useTimeOff } from '@/hooks/useAvailability'
 import { useCurrentStaff } from '@/hooks/useCurrentStaff'
+import { listAppointments } from '@/repositories/appointments.repo'
+import { computeFreeSlots, type TimeSlot } from '@/lib/slotUtils'
+import { formatDateIso } from '@/lib/timeGrid'
+import { cn } from '@/lib/utils'
 import type { AppointmentStatus } from '@/lib/database.types'
 
 type ModalMode = 'create' | 'view'
@@ -59,6 +66,7 @@ export function AppointmentModal({
   const createMutation = useCreateAppointment()
   const updateMutation = useUpdateAppointment()
 
+  // --- Shared state ---
   const [patient, setPatient] = useState<{ id: string; full_name: string } | null>(null)
   const [doctorId, setDoctorId] = useState<string | undefined>(undefined)
   const [startTime, setStartTime] = useState('')
@@ -67,53 +75,71 @@ export function AppointmentModal({
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [patientPickerOpen, setPatientPickerOpen] = useState(false)
 
-  // Fetch availability & time-off for selected doctor (create mode only)
+  // --- Create mode state ---
+  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
+
+  const dateIso = formatDateIso(selectedDate)
+
+  // --- Data hooks (create mode only) ---
   const { data: availability } = useAvailability(mode === 'create' ? doctorId : undefined)
   const { data: timeOff } = useTimeOff(mode === 'create' ? doctorId : undefined)
 
-  // Check if selected time fits doctor's availability
-  function getAvailabilityWarning(): string | null {
-    if (!doctorId || !startTime || !endTime || mode !== 'create') return null
+  // Fetch existing appointments for this doctor + date (needed for slot conflict check)
+  const { data: doctorAppointments, isLoading: isLoadingSlots } = useQuery({
+    queryKey: ['appointments', { date: dateIso, doctorId }],
+    queryFn: async () => {
+      const { data, error } = await listAppointments({ date: dateIso, doctorId: doctorId! })
+      if (error) throw error
+      return data
+    },
+    enabled: mode === 'create' && !!doctorId,
+  })
 
-    const start = new Date(startTime)
-    const end = new Date(endTime)
-    const weekday = start.getUTCDay()
-    const startMinutes = start.getUTCHours() * 60 + start.getUTCMinutes()
-    const endMinutes = end.getUTCHours() * 60 + end.getUTCMinutes()
+  // --- Compute free slots ---
+  const freeSlots = useMemo(() => {
+    if (!doctorId || !availability || mode !== 'create') return []
+    return computeFreeSlots(
+      dateIso,
+      availability,
+      timeOff ?? [],
+      (doctorAppointments ?? []).filter((a: { status: string }) => a.status !== 'cancelled'),
+    )
+  }, [doctorId, dateIso, availability, timeOff, doctorAppointments, mode])
 
-    // Check availability slots
-    if (availability && availability.length > 0) {
-      const daySlots = availability.filter((s) => s.weekday === weekday)
-      if (daySlots.length === 0) {
-        return 'Doctor has no availability on this day'
-      }
-      const fitsSlot = daySlots.some((s) => {
-        const [sh, sm] = s.start_time.split(':').map(Number)
-        const [eh, em] = s.end_time.split(':').map(Number)
-        return startMinutes >= sh * 60 + sm && endMinutes <= eh * 60 + em
-      })
-      if (!fitsSlot) {
-        return 'Appointment is outside doctor\'s available hours'
-      }
-    }
-
-    // Check time-off
-    if (timeOff && timeOff.length > 0) {
-      const hasConflict = timeOff.some((t) => {
-        const tStart = new Date(t.start_datetime).getTime()
-        const tEnd = new Date(t.end_datetime).getTime()
-        return start.getTime() < tEnd && end.getTime() > tStart
-      })
-      if (hasConflict) {
-        return 'Doctor is on time off during this period'
-      }
-    }
-
-    return null
+  // --- Create mode handlers ---
+  function handleSlotSelect(slot: TimeSlot) {
+    setSelectedSlot(slot)
+    setStartTime(slot.startIso)
+    setEndTime(slot.endIso)
   }
 
-  const availabilityWarning = getAvailabilityWarning()
+  function handleDateSelect(date: Date) {
+    setSelectedDate(date)
+    setSelectedSlot(null)
+    setStartTime('')
+    setEndTime('')
+  }
 
+  function handleDoctorChange(newDoctorId: string) {
+    setDoctorId(newDoctorId)
+    setSelectedSlot(null)
+    setStartTime('')
+    setEndTime('')
+  }
+
+  // --- Auto-select slot when pre-filled from time-grid click ---
+  useEffect(() => {
+    if (mode !== 'create' || !defaultStartTime || freeSlots.length === 0) return
+    const match = freeSlots.find((s) => s.startIso === defaultStartTime)
+    if (match && !selectedSlot) {
+      setSelectedSlot(match)
+      setStartTime(match.startIso)
+      setEndTime(match.endIso)
+    }
+  }, [freeSlots, defaultStartTime, mode, selectedSlot])
+
+  // --- Initialization effect ---
   useEffect(() => {
     if (mode === 'view' && appointment) {
       setPatient(appointment.patient)
@@ -124,12 +150,23 @@ export function AppointmentModal({
     } else if (mode === 'create') {
       setPatient(null)
       setDoctorId(defaultDoctorId ?? undefined)
-      setStartTime(defaultStartTime ?? (defaultDate ? `${defaultDate}T09:00` : ''))
-      setEndTime(defaultEndTime ?? (defaultDate ? `${defaultDate}T09:30` : ''))
       setNotes('')
+      setSelectedSlot(null)
+
+      // Initialize calendar date
+      if (defaultDate) {
+        setSelectedDate(new Date(defaultDate + 'T12:00:00'))
+      } else {
+        setSelectedDate(new Date())
+      }
+
+      // Pre-populate times if provided (from time-grid click)
+      setStartTime(defaultStartTime ?? '')
+      setEndTime(defaultEndTime ?? '')
     }
   }, [mode, appointment, defaultDate, defaultDoctorId, defaultStartTime, defaultEndTime])
 
+  // --- Create handler ---
   async function handleCreate() {
     if (!patient || !doctorId || !startTime || !endTime || !practiceId) return
     await createMutation.mutateAsync({
@@ -144,6 +181,7 @@ export function AppointmentModal({
     onOpenChange(false)
   }
 
+  // --- View mode handlers (unchanged) ---
   async function handleCancel() {
     if (!appointment) return
     await updateMutation.mutateAsync({ id: appointment.id, status: 'cancelled' })
@@ -171,130 +209,186 @@ export function AppointmentModal({
   const isDoctor = role === 'doctor'
   const isTerminal = appointment?.status === 'completed' || appointment?.status === 'cancelled'
 
+  // --- Empty state message for slots column ---
+  const slotsEmptyMessage = !doctorId
+    ? 'Select a doctor first'
+    : freeSlots.length === 0
+      ? 'No available slots'
+      : ''
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md">
+        <DialogContent className={cn(mode === 'create' ? 'max-w-5xl' : 'max-w-md')}>
           <DialogHeader>
             <DialogTitle>
               {mode === 'create' ? 'New Appointment' : 'Appointment Details'}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex flex-col gap-4">
-            {mode === 'view' && appointment && (
-              <div className="flex items-center gap-2">
-                <Badge>{appointment.status}</Badge>
-                {appointment.doctor?.full_name && (
-                  <span className="text-sm text-muted-foreground">
-                    Dr. {appointment.doctor.full_name}
-                  </span>
-                )}
-              </div>
-            )}
-
-            <div className="flex flex-col gap-2">
-              <Label>Patient</Label>
-              {mode === 'create' ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-start font-normal"
-                  onClick={() => setPatientPickerOpen(true)}
-                >
-                  {patient ? patient.full_name : <span className="text-muted-foreground">Select patient...</span>}
-                </Button>
-              ) : (
-                <Input value={appointment?.patient?.full_name ?? ''} disabled />
-              )}
-            </div>
-
-            {mode === 'create' && (
-              <div className="flex flex-col gap-2">
-                <Label>Doctor</Label>
-                <DoctorSelector
-                  value={doctorId}
-                  onValueChange={setDoctorId}
-                  placeholder="Select doctor..."
-                />
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-2">
-                <Label>Start</Label>
-                <Input
-                  type="datetime-local"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  disabled={mode === 'view'}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label>End</Label>
-                <Input
-                  type="datetime-local"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  disabled={mode === 'view'}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label>Notes</Label>
-              <Input
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Optional notes"
-                disabled={mode === 'view'}
-              />
-            </div>
-
-            {availabilityWarning && (
-              <p className="text-sm text-destructive">{availabilityWarning}</p>
-            )}
-            {createMutation.error && (
-              <p className="text-sm text-destructive">{(createMutation.error as Error).message}</p>
-            )}
-          </div>
-
-          <DialogFooter className="flex-col gap-2 sm:flex-row">
-            {mode === 'create' && (
-              <Button
-                onClick={handleCreate}
-                disabled={!patient || !doctorId || !startTime || !endTime || !!availabilityWarning || createMutation.isPending}
-              >
-                {createMutation.isPending ? 'Creating...' : 'Create Appointment'}
-              </Button>
-            )}
-
-            {mode === 'view' && !isTerminal && (canManage || isDoctor) && (
-              <>
-                {canManage && appointment?.status === 'unassigned' && (
-                  <DoctorSelector
-                    value={undefined}
-                    onValueChange={handleAssignDoctor}
-                    placeholder="Assign doctor..."
-                  />
-                )}
-                {appointment?.status === 'scheduled' && (
-                  <Button variant="outline" onClick={handleComplete} disabled={updateMutation.isPending}>
-                    Complete
-                  </Button>
-                )}
-                {canManage && (
+          {mode === 'create' ? (
+            /* ===== 3-COLUMN CREATE LAYOUT ===== */
+            <div className="grid grid-cols-[260px_1fr_200px] gap-6">
+              {/* Column 1: Form fields */}
+              <div className="flex flex-col gap-4">
+                {/* Patient */}
+                <div className="flex flex-col gap-2">
+                  <Label>Patient</Label>
                   <Button
-                    variant="destructive"
-                    onClick={() => setConfirmCancel(true)}
-                    disabled={updateMutation.isPending}
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-start font-normal"
+                    onClick={() => setPatientPickerOpen(true)}
                   >
-                    Cancel Appointment
+                    {patient ? (
+                      patient.full_name
+                    ) : (
+                      <span className="text-muted-foreground">Select patient...</span>
+                    )}
                   </Button>
+                </div>
+
+                {/* Doctor */}
+                <div className="flex flex-col gap-2">
+                  <Label>Doctor</Label>
+                  <DoctorSelector
+                    value={doctorId}
+                    onValueChange={handleDoctorChange}
+                    placeholder="Select doctor..."
+                  />
+                </div>
+
+                {/* Selected time summary */}
+                {selectedSlot && (
+                  <div className="rounded-md border bg-muted/50 p-3">
+                    <p className="text-sm text-muted-foreground">
+                      {selectedDate.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                    <p className="text-lg font-semibold">
+                      {selectedSlot.label} &ndash; {selectedSlot.endIso.split('T')[1]}
+                    </p>
+                  </div>
                 )}
-              </>
-            )}
-          </DialogFooter>
+
+                {/* Notes */}
+                <div className="flex flex-col gap-2">
+                  <Label>Notes</Label>
+                  <Input
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Optional notes"
+                  />
+                </div>
+
+                {/* Error */}
+                {createMutation.error && (
+                  <p className="text-sm text-destructive">
+                    {(createMutation.error as Error).message}
+                  </p>
+                )}
+
+                {/* Create button */}
+                <Button
+                  onClick={handleCreate}
+                  disabled={
+                    !patient || !doctorId || !selectedSlot || createMutation.isPending
+                  }
+                  className="mt-auto"
+                >
+                  {createMutation.isPending ? 'Creating...' : 'Create Appointment'}
+                </Button>
+              </div>
+
+              {/* Column 2: Monthly calendar */}
+              <div className="flex flex-col items-center border-x px-4">
+                <MiniCalendar selectedDate={selectedDate} onDateSelect={handleDateSelect} />
+              </div>
+
+              {/* Column 3: Available time slots */}
+              <div>
+                <AvailableSlotsList
+                  slots={freeSlots}
+                  selectedSlot={selectedSlot}
+                  onSlotSelect={handleSlotSelect}
+                  isLoading={isLoadingSlots && !!doctorId}
+                  emptyMessage={slotsEmptyMessage}
+                />
+              </div>
+            </div>
+          ) : (
+            /* ===== VIEW MODE (unchanged) ===== */
+            <>
+              <div className="flex flex-col gap-4">
+                {appointment && (
+                  <div className="flex items-center gap-2">
+                    <Badge>{appointment.status}</Badge>
+                    {appointment.doctor?.full_name && (
+                      <span className="text-sm text-muted-foreground">
+                        Dr. {appointment.doctor.full_name}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-2">
+                  <Label>Patient</Label>
+                  <Input value={appointment?.patient?.full_name ?? ''} disabled />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-2">
+                    <Label>Start</Label>
+                    <Input type="datetime-local" value={startTime} disabled />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label>End</Label>
+                    <Input type="datetime-local" value={endTime} disabled />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label>Notes</Label>
+                  <Input value={notes} placeholder="No notes" disabled />
+                </div>
+              </div>
+
+              <DialogFooter className="flex-col gap-2 sm:flex-row">
+                {!isTerminal && (canManage || isDoctor) && (
+                  <>
+                    {canManage && appointment?.status === 'unassigned' && (
+                      <DoctorSelector
+                        value={undefined}
+                        onValueChange={handleAssignDoctor}
+                        placeholder="Assign doctor..."
+                      />
+                    )}
+                    {appointment?.status === 'scheduled' && (
+                      <Button
+                        variant="outline"
+                        onClick={handleComplete}
+                        disabled={updateMutation.isPending}
+                      >
+                        Complete
+                      </Button>
+                    )}
+                    {canManage && (
+                      <Button
+                        variant="destructive"
+                        onClick={() => setConfirmCancel(true)}
+                        disabled={updateMutation.isPending}
+                      >
+                        Cancel Appointment
+                      </Button>
+                    )}
+                  </>
+                )}
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
