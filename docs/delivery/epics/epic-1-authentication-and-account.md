@@ -222,11 +222,11 @@ Then only the practice and admin account are created (current behavior)
 
 ### Demo Data Set
 - Practice: clinic_name "D-Spot", slogan "Satisfaction Guaranteed", show_on_main = true
-- 3 staff members: 2 doctors (Ukrainian names, Latin script), 1 clinic_manager
-- 12 patients with international names and varied contact details
-- 21 scheduled/completed/cancelled appointments + 2 unassigned (relative to current week)
-- Availability: Mon–Fri 10:00–19:00, Sat 10:00–15:00 for both doctors
-- 1 time-off entry (vacation)
+- 7 staff members: 6 doctors + 1 clinic_manager
+- 25 patients with international names and varied contact details
+- ~350 appointments across 3 weeks (prev 55-65%, current 55%, next 25%) + 3 unassigned
+- Availability: Mon–Fri 10:00–19:00, Sat 10:00–15:00 (doctors 1-3)
+- 1 time-off entry (doctor vacation, Wed-Fri next week)
 
 ### Implementation
 - `seed_demo_data(p_practice_id uuid)` — RPC, security definer, in `docs/backend/seed-demo.sql`
