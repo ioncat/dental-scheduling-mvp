@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
 
-User((User\nAdmin / Doctor / Clinic Manager))
+User((User\nAdmin / Doctor / Manager))
 
 User --> Browser[Browser]
 
@@ -18,25 +18,22 @@ Router --> UI
 UI --> Query
 Query --> Repos
 
-%% Supabase
+%% Supabase Platform
 
-Repos --> Supabase[Supabase Platform]
+Repos -->|supabase-js| Auth
+Repos -->|supabase-js| Postgres
 
-subgraph Supabase
-Auth[Auth\nMagic Link + Google OAuth]
-Postgres[(PostgreSQL)]
-RLS[RLS Policies]
-Triggers[Domain Triggers]
+subgraph SupabasePlatform[Supabase Platform]
+  Auth[Auth\nMagic Link + Google OAuth]
+  Postgres[(PostgreSQL)]
+  RLS[RLS Policies]
+  Triggers[Domain Triggers]
+  Tables[Tables\npractice · staff · patient\nappointment · availability · time_off]
 end
-
-Supabase --> Auth
-Supabase --> Postgres
 
 Postgres --> RLS
 Postgres --> Triggers
+Postgres --- Tables
 
-Auth --> SPA
-
-%% Data
-
-Postgres --- Tables[Tables\npractice\nstaff\npatient\nappointment\navailability\ntime_off]
+Auth -->|session token| SPA
+```
