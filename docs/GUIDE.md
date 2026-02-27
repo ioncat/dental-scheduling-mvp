@@ -1,6 +1,6 @@
 # Documentation Guide
 
-> 35 documents, 11 epics, 28 user stories.
+> 36 documents, 11 epics, 28 user stories.
 > This guide helps you navigate without getting lost.
 
 ## Reading Paths
@@ -45,44 +45,45 @@
 | # | Document | Purpose | You'll learn |
 |---|----------|---------|-------------|
 | 14 | [Domain ↔ UI Contract](contracts/domain-ui.md) | Single source of truth | Roles, pages, routes, 15 business rules |
+| 15 | [Appointment Lifecycle](contracts/appointment-lifecycle.md) | Full status flow | Transitions, triggers, permissions, visual indicators |
 
 ## UI Specification — what the user sees
 
 | # | Document | Purpose | You'll learn |
 |---|----------|---------|-------------|
-| 15 | [Pages](ui/ui.pages.md) | All 8 pages spec | /setup, /login, /schedule, /patients, /availability, /settings, /account |
-| 16 | [Components](ui/ui.components.md) | Component tree | Layout, forms, modals, design fidelity level |
+| 16 | [Pages](ui/ui.pages.md) | All 8 pages spec | /setup, /login, /schedule, /patients, /availability, /settings, /account |
+| 17 | [Components](ui/ui.components.md) | Component tree | Layout, forms, modals, design fidelity level |
 
 ## Backend — what the database enforces
 
 | # | Document | Purpose | You'll learn |
 |---|----------|---------|-------------|
-| 17 | [Logical Schema](backend/schema.logical.md) | Data model | 6 tables, attributes, constraints |
-| 18 | [Schema SQL](backend/schema.sql) | DDL reference | Enums, tables, indexes |
-| 19 | [Triggers](backend/triggers.sql) | Business rule enforcement | Overlap check, availability guard, UTC, auto-unassign |
-| 20 | [RLS Policies](backend/rls.sql) | Row Level Security | Helper functions, per-table policies |
-| 21 | [Demo Seed](backend/seed-demo.sql) | Sample data function | Staff, patients, appointments for evaluation |
-| 22 | [**init-all.sql**](backend/init-all.sql) | **Production deploy script** | Everything above in one executable file |
+| 18 | [Logical Schema](backend/schema.logical.md) | Data model | 6 tables, attributes, constraints |
+| 19 | [Schema SQL](backend/schema.sql) | DDL reference | Enums, tables, indexes |
+| 20 | [Triggers](backend/triggers.sql) | Business rule enforcement | Overlap check, availability guard, UTC, auto-unassign |
+| 21 | [RLS Policies](backend/rls.sql) | Row Level Security | Helper functions, per-table policies |
+| 22 | [Demo Seed](backend/seed-demo.sql) | Sample data function | Staff, patients, appointments for evaluation |
+| 23 | [**init-all.sql**](backend/init-all.sql) | **Production deploy script** | Everything above in one executable file |
 
 ## Delivery — how it was built
 
 | # | Document | Purpose | You'll learn |
 |---|----------|---------|-------------|
-| 23 | [Dev Plan (EN)](delivery/dev-plan-en.md) | Implementation roadmap | 8 phases, 28/28 stories, status |
-| 24 | [Dev Plan (RU)](delivery/dev-plan%20-ru.md) | Same in Russian | Mirror of EN version |
+| 24 | [Dev Plan (EN)](delivery/dev-plan-en.md) | Implementation roadmap | 8 phases, 28/28 stories, status |
+| 25 | [Dev Plan (RU)](delivery/dev-plan%20-ru.md) | Same in Russian | Mirror of EN version |
 
 ### Epics (28 user stories)
 
 | # | Epic | Stories | Key capability |
 |---|------|---------|---------------|
-| 25 | [Epic 1 — Auth & Account](delivery/epics/epic-1-authentication-and-account.md) | 1.0–1.5 | Setup, magic link, Google OAuth, account |
-| 26 | [Epic 2 — Practice](delivery/epics/epic-2-practice-management.md) | 2.1–2.2 | Clinic settings, branding in header |
-| 27 | [Epic 3 — Staff](delivery/epics/epic-3-staff-management.md) | 3.1–3.6 | Invite, onboard, deactivate, reactivate |
-| 28 | [Epic 4 — Patients](delivery/epics/epic-4-patient-lifecycle.md) | 4.1–4.4 | CRUD, archive/restore |
-| 29 | [Epic 5 — Scheduling](delivery/epics/epic-5-scheduling-engine.md) | 5.1–5.6 | Daily view, create/edit/cancel/complete |
-| 30 | [Epic 6 — Availability](delivery/epics/epic-6-availability-and-time-off.md) | 6.1–6.5 | Weekly slots, time-off (vacation/sick) |
-| 31 | [Epic 7 — Reassignment](delivery/epics/epic-7-operational-reassignment.md) | 7.1–7.3 | Auto-unassign, alert banner |
-| 32 | [Epic 8 — Access Control](delivery/epics/epic-8-access-control.md) | 8.1–8.2 | RLS-based RBAC |
-| 33 | [Epic 9 — Notifications](delivery/epics/epic-9-notifications.md) | 9.1–9.2 | *Deferred to post-MVP* |
-| 34 | [Epic 10 — Constraints](delivery/epics/epic-10-system-constraints.md) | 10.1–10.5 | UTC, overlap, availability, triggers |
-| 35 | [Epic 11 — Audit Log](delivery/epics/epic-11-audit-log.md) | 11.1–11.2 | *Backlog* |
+| 26 | [Epic 1 — Auth & Account](delivery/epics/epic-1-authentication-and-account.md) | 1.0–1.5 | Setup, magic link, Google OAuth, account |
+| 27 | [Epic 2 — Practice](delivery/epics/epic-2-practice-management.md) | 2.1–2.2 | Clinic settings, branding in header |
+| 28 | [Epic 3 — Staff](delivery/epics/epic-3-staff-management.md) | 3.1–3.6 | Invite, onboard, deactivate, reactivate |
+| 29 | [Epic 4 — Patients](delivery/epics/epic-4-patient-lifecycle.md) | 4.1–4.4 | CRUD, archive/restore |
+| 30 | [Epic 5 — Scheduling](delivery/epics/epic-5-scheduling-engine.md) | 5.1–5.6 | Daily view, create/edit/cancel/complete |
+| 31 | [Epic 6 — Availability](delivery/epics/epic-6-availability-and-time-off.md) | 6.1–6.5 | Weekly slots, time-off (vacation/sick) |
+| 32 | [Epic 7 — Reassignment](delivery/epics/epic-7-operational-reassignment.md) | 7.1–7.3 | Auto-unassign, alert banner |
+| 33 | [Epic 8 — Access Control](delivery/epics/epic-8-access-control.md) | 8.1–8.2 | RLS-based RBAC |
+| 34 | [Epic 9 — Notifications](delivery/epics/epic-9-notifications.md) | 9.1–9.2 | *Deferred to post-MVP* |
+| 35 | [Epic 10 — Constraints](delivery/epics/epic-10-system-constraints.md) | 10.1–10.5 | UTC, overlap, availability, triggers |
+| 36 | [Epic 11 — Audit Log](delivery/epics/epic-11-audit-log.md) | 11.1–11.2 | *Backlog* |

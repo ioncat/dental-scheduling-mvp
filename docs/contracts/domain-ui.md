@@ -261,15 +261,15 @@ Applies only to active staff.
 - Google OAuth (optional, requires Supabase config)
 
 /schedule
-- Daily view (all doctors)
-- Shows booked + free slots
-- Unassigned appointments highlighted
-- Admin / clinic_manager see alert:
+- Daily view with doctor columns (one column per active doctor)
+- Date navigation: previous / next day, direct date input, Today button
+- "New Appointment" button (admin / clinic_manager only)
+- Unassigned appointments column (first column, orange pulse animation)
+- Admin / clinic_manager see alert banner:
 
-⚠ Unassigned appointments require reassignment
+⚠ N unassigned appointment(s) — assign a doctor to resolve.
 
-- Click free slot → create appointment
-- Click appointment → open modal
+- Click appointment card → open details modal (view/complete/cancel/assign)
 
 /patients  
 /patients/:id  

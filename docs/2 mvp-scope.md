@@ -107,21 +107,39 @@ The MVP focuses on operational clarity, not growth features.
 
 ### Creating an appointment
 
-1. Click on a free time slot in the schedule grid
-2. Select patient from the patient registry
-3. Select doctor (or leave unassigned)
-4. Confirm time range
-5. Add notes (optional)
+1. Admin or clinic manager clicks "New Appointment" button
+2. Selects patient from the patient registry
+3. Selects doctor (required — system validates availability)
+4. Sets start and end time
+5. Adds notes (optional)
 6. Save — appointment status becomes "scheduled"
+
+---
+
+### Completing an appointment
+
+1. Doctor or admin opens a scheduled appointment
+2. Clicks "Complete"
+3. Status becomes "completed" (terminal — no further changes)
 
 ---
 
 ### Handling cancellation
 
-1. Open existing appointment
-2. Click cancel
-3. Confirm cancellation
-4. Status becomes "cancelled", time slot is freed
+1. Admin or clinic manager opens an appointment
+2. Clicks "Cancel Appointment"
+3. Confirms in the confirmation dialog
+4. Status becomes "cancelled" (terminal), time slot is freed
+
+---
+
+### Reassigning an unassigned appointment
+
+1. Admin or clinic manager sees orange alert banner on /schedule
+2. Opens the unassigned appointment
+3. Selects a doctor from the dropdown
+4. Status changes from "unassigned" to "scheduled"
+5. Alert disappears when all appointments are reassigned
 
 ---
 
