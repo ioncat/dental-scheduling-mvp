@@ -91,4 +91,19 @@ Alex Bondarenko — Product Owner / Product Manager
 
 [GitHub](https://github.com/ioncat/) · [LinkedIn](https://www.linkedin.com/in/alexibondarenko/)
 
+### AI Co-Authors
+
+**ChatGPT 5.2** — product discovery & planning
+- Problem analysis and hypothesis framing
+- Product vision, MVP scope, roadmap
+- Epic breakdown and user story writing
+- Delivery conventions and decision records
+
+**Claude Code (Opus 4.6)** — architecture & implementation
+- System architecture and database design
+- Frontend development (React, TypeScript, full MVP)
+- Backend contracts (triggers, RLS, RPC functions)
+- Documentation sync and product orientation
+- Docker deployment with production hardening
+
 ---
