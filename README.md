@@ -63,11 +63,17 @@ Determine whether doctors are willing to replace Google Calendar with a dedicate
 
 ## Where to Start
 
-Pick the path that fits your goal:
+**Product**
 
 | Goal | Start here | Then |
 |------|-----------|------|
 | **Understand the product** | [Executive Summary](docs/0%20executive-summary.md) | [Product Vision](docs/1%20product-vision.md) → [MVP Scope](docs/2%20mvp-scope.md) → [Domain Contract](docs/contracts/domain-ui.md) |
+| **Review decisions** | [PDR-001](docs/decisions/pdr-001-no-patient-self-booking.md) | [PDR-002](docs/decisions/pdr-002-manual-appointment-completion.md) → [PDR-003](docs/decisions/pdr-003-no-external-calendar-integration.md) → [PDR-004](docs/decisions/pdr-004-one-clinic-per-user.md) |
+
+**Architecture, Delivery & Code**
+
+| Goal | Start here | Then |
+|------|-----------|------|
 | **Review architecture** | [System Context](docs/system/system-context.md) | [Container Diagram](docs/system/container-diagram.md) → [Schema](docs/backend/schema.logical.md) |
 | **See delivery process** | [Dev Plan](docs/delivery/dev-plan-en.md) | [Epics](docs/delivery/epics/) (11 epics, 28 user stories) |
 | **Run the application** | [Quick Start](app/QUICK-START.md) | `npm install` → `npm run dev` → demo data included |
