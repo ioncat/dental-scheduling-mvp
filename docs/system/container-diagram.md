@@ -1,10 +1,10 @@
 ```mermaid
 flowchart LR
 
-    User[(Admin / Doctor / Clinic Manager)]
+    User((Admin / Doctor / Manager))
 
     subgraph Browser["Browser"]
-        SPA[(Frontend UI)]
+        SPA[Frontend UI]
     end
 
     subgraph Backend["Backend Platform"]
