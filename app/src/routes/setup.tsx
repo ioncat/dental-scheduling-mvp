@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
@@ -63,15 +63,21 @@ export default function SetupPage() {
       return
     }
 
+    magicLinkSent.current = true
     setState('success')
   }
 
-  // Listen for auth (when admin clicks magic link in another tab)
-  supabase.auth.onAuthStateChange((event) => {
-    if (event === 'SIGNED_IN') {
-      navigate({ to: '/schedule' })
-    }
-  })
+  // Track whether magic link was sent — only then listen for auth
+  const magicLinkSent = useRef(false)
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' && magicLinkSent.current) {
+        navigate({ to: '/schedule' })
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [navigate])
 
   if (state === 'success') {
     return (
