@@ -5,11 +5,13 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { useAppointments } from '@/hooks/useAppointments'
 import { useStaff } from '@/hooks/useStaff'
 import { useCurrentStaff } from '@/hooks/useCurrentStaff'
-import { DoctorColumn } from '@/components/schedule/DoctorColumn'
+import { useAllDoctorsAvailability, useAllDoctorsTimeOff } from '@/hooks/useAvailability'
 import { UnassignedAlert } from '@/components/schedule/UnassignedAlert'
 import { AppointmentModal } from '@/components/schedule/AppointmentModal'
+import TimeGridCalendar from '@/components/schedule/TimeGridCalendar'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorBanner } from '@/components/shared/ErrorBanner'
+import type { DoctorColumnData } from '@/components/schedule/TimeGridBody'
 
 function formatDate(date: Date) {
   return date.toISOString().split('T')[0]!
@@ -22,44 +24,58 @@ export default function SchedulePage() {
   const [modalMode, setModalMode] = useState<'create' | 'view'>('create')
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
 
+  // Pre-fill state for click-to-create
+  const [defaultDoctorId, setDefaultDoctorId] = useState<string | undefined>()
+  const [defaultStartTime, setDefaultStartTime] = useState<string | undefined>()
+  const [defaultEndTime, setDefaultEndTime] = useState<string | undefined>()
+
   const { data: appointments, isLoading, error } = useAppointments({ date: selectedDate })
   const { data: allStaff } = useStaff({ role: 'doctor', status: 'active' })
 
   const canManage = role === 'admin' || role === 'clinic_manager'
 
-  // Group appointments by doctor
-  const grouped = useMemo(() => {
-    if (!appointments || !allStaff) return []
+  // Build doctor IDs list for batch availability fetch
+  const doctorIds = useMemo(() => {
+    if (!allStaff) return []
+    if (role === 'doctor') return staff?.id ? [staff.id] : []
+    return allStaff.map((d: any) => d.id)
+  }, [allStaff, role, staff?.id])
 
-    const unassigned = appointments.filter((a: any) => !a.doctor_id)
-    const doctorMap = new Map<string, { name: string; appointments: any[] }>()
+  // Batch-fetch availability and time-off for all visible doctors
+  const { data: allAvailability } = useAllDoctorsAvailability(doctorIds)
+  const { data: allTimeOff } = useAllDoctorsTimeOff(doctorIds, selectedDate)
 
-    // Initialize all active doctors
+  // Selected weekday for filtering availability
+  const selectedWeekday = new Date(selectedDate + 'T12:00:00').getDay()
+
+  // Group data into columns for TimeGridCalendar
+  const { columns, unassigned } = useMemo(() => {
+    const unassignedAppts = appointments?.filter((a: any) => !a.doctor_id) ?? []
+
+    if (!allStaff) return { columns: [] as DoctorColumnData[], unassigned: unassignedAppts }
+
+    const cols: DoctorColumnData[] = []
+
     for (const doc of allStaff) {
-      // Doctor role: only show own column
       if (role === 'doctor' && doc.id !== staff?.id) continue
-      doctorMap.set(doc.id, { name: doc.full_name, appointments: [] })
+
+      const docAppts = appointments?.filter((a: any) => a.doctor_id === doc.id) ?? []
+      const docAvail = (allAvailability ?? []).filter(
+        (a: any) => a.staff_id === doc.id && a.weekday === selectedWeekday,
+      )
+      const docTimeOff = (allTimeOff ?? []).filter((t: any) => t.staff_id === doc.id)
+
+      cols.push({
+        id: doc.id,
+        name: doc.full_name,
+        appointments: docAppts,
+        availability: docAvail,
+        timeOff: docTimeOff,
+      })
     }
 
-    // Distribute appointments to doctors
-    for (const apt of appointments) {
-      if (apt.doctor_id && doctorMap.has(apt.doctor_id)) {
-        doctorMap.get(apt.doctor_id)!.appointments.push(apt)
-      }
-    }
-
-    const columns = Array.from(doctorMap.entries()).map(([id, data]) => ({
-      id,
-      ...data,
-    }))
-
-    // Add unassigned column if there are unassigned appointments
-    if (unassigned.length > 0 && canManage) {
-      columns.unshift({ id: 'unassigned', name: 'Unassigned', appointments: unassigned })
-    }
-
-    return columns
-  }, [appointments, allStaff, role, staff?.id, canManage])
+    return { columns: cols, unassigned: unassignedAppts }
+  }, [appointments, allStaff, allAvailability, allTimeOff, role, staff?.id, selectedWeekday])
 
   const unassignedCount = appointments?.filter((a: any) => a.status === 'unassigned').length ?? 0
 
@@ -77,12 +93,27 @@ export default function SchedulePage() {
   function handleAppointmentClick(id: string) {
     setSelectedAppointmentId(id)
     setModalMode('view')
+    setDefaultDoctorId(undefined)
+    setDefaultStartTime(undefined)
+    setDefaultEndTime(undefined)
     setModalOpen(true)
   }
 
   function handleCreate() {
     setSelectedAppointmentId(null)
     setModalMode('create')
+    setDefaultDoctorId(undefined)
+    setDefaultStartTime(undefined)
+    setDefaultEndTime(undefined)
+    setModalOpen(true)
+  }
+
+  function handleSlotClick(doctorId: string, startIso: string, endIso: string) {
+    setSelectedAppointmentId(null)
+    setModalMode('create')
+    setDefaultDoctorId(doctorId)
+    setDefaultStartTime(startIso)
+    setDefaultEndTime(endIso)
     setModalOpen(true)
   }
 
@@ -126,23 +157,19 @@ export default function SchedulePage() {
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
         </div>
+      ) : columns.length === 0 ? (
+        <p className="w-full py-12 text-center text-muted-foreground">
+          No doctors or appointments for this date.
+        </p>
       ) : (
-        <div className="flex gap-4 overflow-x-auto rounded-lg border bg-card p-2">
-          {grouped.length === 0 ? (
-            <p className="w-full py-12 text-center text-muted-foreground">
-              No doctors or appointments for this date.
-            </p>
-          ) : (
-            grouped.map((col) => (
-              <DoctorColumn
-                key={col.id}
-                doctorName={col.name}
-                appointments={col.appointments}
-                onAppointmentClick={handleAppointmentClick}
-              />
-            ))
-          )}
-        </div>
+        <TimeGridCalendar
+          columns={columns}
+          unassigned={unassigned}
+          selectedDate={selectedDate}
+          canManage={canManage}
+          onAppointmentClick={handleAppointmentClick}
+          onSlotClick={handleSlotClick}
+        />
       )}
 
       {/* Modal */}
@@ -152,6 +179,9 @@ export default function SchedulePage() {
         mode={modalMode}
         appointment={selectedAppointment}
         defaultDate={selectedDate}
+        defaultDoctorId={defaultDoctorId}
+        defaultStartTime={defaultStartTime}
+        defaultEndTime={defaultEndTime}
         practiceId={staff?.practice_id}
       />
     </div>

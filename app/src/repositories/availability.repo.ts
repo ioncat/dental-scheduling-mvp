@@ -55,3 +55,23 @@ export async function createTimeOff(payload: CreateTimeOffPayload) {
 export async function deleteTimeOff(id: string) {
   return supabase.from('time_off').delete().eq('id', id)
 }
+
+// --- Batch queries (for time-grid calendar) ---
+
+export async function listAvailabilityForDoctors(staffIds: string[]) {
+  return supabase
+    .from('availability')
+    .select('*')
+    .in('staff_id', staffIds)
+    .order('weekday', { ascending: true })
+    .order('start_time', { ascending: true })
+}
+
+export async function listTimeOffForDate(staffIds: string[], dateStart: string, dateEnd: string) {
+  return supabase
+    .from('time_off')
+    .select('*')
+    .in('staff_id', staffIds)
+    .lte('start_datetime', dateEnd)
+    .gte('end_datetime', dateStart)
+}

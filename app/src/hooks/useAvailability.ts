@@ -7,6 +7,8 @@ import {
   listTimeOff,
   createTimeOff,
   deleteTimeOff,
+  listAvailabilityForDoctors,
+  listTimeOffForDate,
   type CreateAvailabilityPayload,
   type CreateTimeOffPayload,
 } from '@/repositories/availability.repo'
@@ -104,5 +106,33 @@ export function useDeleteTimeOff() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['time-off', variables.staffId] })
     },
+  })
+}
+
+// --- Batch hooks for time-grid calendar ---
+
+export function useAllDoctorsAvailability(staffIds: string[]) {
+  return useQuery({
+    queryKey: ['availability', 'all', staffIds],
+    queryFn: async () => {
+      const { data, error } = await listAvailabilityForDoctors(staffIds)
+      if (error) throw error
+      return data
+    },
+    enabled: staffIds.length > 0,
+  })
+}
+
+export function useAllDoctorsTimeOff(staffIds: string[], date: string) {
+  const dayStart = `${date}T00:00:00Z`
+  const dayEnd = `${date}T23:59:59Z`
+  return useQuery({
+    queryKey: ['time-off', 'all', staffIds, date],
+    queryFn: async () => {
+      const { data, error } = await listTimeOffForDate(staffIds, dayStart, dayEnd)
+      if (error) throw error
+      return data
+    },
+    enabled: staffIds.length > 0,
   })
 }

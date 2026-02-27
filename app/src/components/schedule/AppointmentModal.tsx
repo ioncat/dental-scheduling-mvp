@@ -38,6 +38,9 @@ interface AppointmentModalProps {
   mode: ModalMode
   appointment?: AppointmentData | null
   defaultDate?: string
+  defaultDoctorId?: string
+  defaultStartTime?: string
+  defaultEndTime?: string
   practiceId?: string
 }
 
@@ -47,6 +50,9 @@ export function AppointmentModal({
   mode,
   appointment,
   defaultDate,
+  defaultDoctorId,
+  defaultStartTime,
+  defaultEndTime,
   practiceId,
 }: AppointmentModalProps) {
   const { role } = useCurrentStaff()
@@ -117,12 +123,12 @@ export function AppointmentModal({
       setNotes(appointment.notes ?? '')
     } else if (mode === 'create') {
       setPatient(null)
-      setDoctorId(undefined)
-      setStartTime(defaultDate ? `${defaultDate}T09:00` : '')
-      setEndTime(defaultDate ? `${defaultDate}T09:30` : '')
+      setDoctorId(defaultDoctorId ?? undefined)
+      setStartTime(defaultStartTime ?? (defaultDate ? `${defaultDate}T09:00` : ''))
+      setEndTime(defaultEndTime ?? (defaultDate ? `${defaultDate}T09:30` : ''))
       setNotes('')
     }
-  }, [mode, appointment, defaultDate])
+  }, [mode, appointment, defaultDate, defaultDoctorId, defaultStartTime, defaultEndTime])
 
   async function handleCreate() {
     if (!patient || !doctorId || !startTime || !endTime || !practiceId) return
