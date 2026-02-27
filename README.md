@@ -63,12 +63,14 @@ Determine whether doctors are willing to replace Google Calendar with a dedicate
 
 ## Where to Start
 
-**Product**
+**Understand the product**
 
-| Goal | Start here | Then |
-|------|-----------|------|
-| **Understand the product** | [Executive Summary](docs/0%20executive-summary.md) | [Product Vision](docs/1%20product-vision.md) → [MVP Scope](docs/2%20mvp-scope.md) → [Domain Contract](docs/contracts/domain-ui.md) |
-| **Review decisions** | [PDR-001](docs/decisions/pdr-001-no-patient-self-booking.md) | [PDR-002](docs/decisions/pdr-002-manual-appointment-completion.md) → [PDR-003](docs/decisions/pdr-003-no-external-calendar-integration.md) → [PDR-004](docs/decisions/pdr-004-one-clinic-per-user.md) |
+1. [Executive Summary](docs/0%20executive-summary.md) — hypothesis, MVP goal, success criteria
+2. [Product Vision](docs/1%20product-vision.md) — target audience, pain points, core principles
+3. [MVP Scope](docs/2%20mvp-scope.md) — what's in, what's out, user flows
+4. [Domain ↔ UI Contract](docs/contracts/domain-ui.md) — roles, pages, routes, 15 business rules
+5. [Appointment Lifecycle](docs/contracts/appointment-lifecycle.md) — status flow, triggers, permissions
+6. [Product Decisions](docs/decisions/) — 4 conscious "no"s (PDR-001 → PDR-004)
 
 **Architecture, Delivery & Code**
 
