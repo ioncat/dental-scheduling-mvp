@@ -121,6 +121,19 @@ create index idx_appointment_patient on appointment(patient_id);
 create index idx_availability_staff on availability(staff_id);
 create index idx_time_off_staff on time_off(staff_id);
 
+-- TABLE GRANTS (required after DROP SCHEMA public CASCADE — Supabase
+-- default privileges are lost when the schema is recreated)
+
+grant usage on schema public to anon, authenticated, service_role;
+
+grant all on all tables in schema public to anon, authenticated, service_role;
+grant all on all sequences in schema public to anon, authenticated, service_role;
+
+-- Ensure future tables/sequences also get grants automatically
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
+
 ------------------------------------------------------------
 -- PART 2: FUNCTIONS & TRIGGERS
 ------------------------------------------------------------
