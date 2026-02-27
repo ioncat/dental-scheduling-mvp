@@ -101,8 +101,9 @@ Alex Bondarenko — Product Owner / Product Manager
 - System architecture and database design
 - Backend contracts (triggers, RLS, RPC functions)
 
-**Claude Code (Opus 4.6)** — development & deployment
+**Claude Code (Opus 4.6)** — development, refinement & deployment
 - Frontend development (React, TypeScript, full MVP)
+- Architecture and database refinement during implementation
 - Documentation sync and product orientation
 - Docker deployment with production hardening
 
