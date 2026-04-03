@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { currentTimeY } from '@/lib/timeGrid'
 import TimeGridHeader from './TimeGridHeader'
 import TimeGridBody from './TimeGridBody'
@@ -23,8 +23,17 @@ export default function TimeGridCalendar({
   onSlotClick,
 }: TimeGridCalendarProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollbarWidth, setScrollbarWidth] = useState(0)
   const today = new Date().toISOString().split('T')[0]
   const isToday = selectedDate === today
+
+  // Measure scrollbar width once body mounts
+  useEffect(() => {
+    if (scrollRef.current) {
+      const w = scrollRef.current.offsetWidth - scrollRef.current.clientWidth
+      setScrollbarWidth(w > 0 ? w + 1 : 0)
+    }
+  }, [columns])
 
   // Scroll to current time on mount / date change
   useEffect(() => {
@@ -47,7 +56,8 @@ export default function TimeGridCalendar({
   }))
 
   return (
-    <div className="overflow-x-auto rounded-lg border bg-card">
+    <div className="overflow-x-auto rounded-lg border bg-card"
+      style={{ '--scrollbar-w': `${scrollbarWidth}px` } as React.CSSProperties}>
       <TimeGridHeader
         doctors={doctorHeaders}
         hasUnassigned={hasUnassigned}

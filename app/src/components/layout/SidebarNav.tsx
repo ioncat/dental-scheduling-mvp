@@ -40,11 +40,21 @@ export function SidebarNav({ role, staffName }: SidebarNavProps) {
         key={item.to}
         to={item.to}
         className={cn(
-          'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+          'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
           isActive
-            ? 'bg-primary text-primary-foreground'
-            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+            ? 'shadow-sm'
+            : 'cursor-pointer'
         )}
+        style={isActive
+          ? { background: 'hsl(var(--sidebar-primary))', color: 'hsl(var(--sidebar-primary-foreground))' }
+          : { color: 'hsl(var(--sidebar-muted-foreground))' }
+        }
+        onMouseEnter={(e) => {
+          if (!isActive) e.currentTarget.style.background = 'hsl(201 50% 25%)'
+        }}
+        onMouseLeave={(e) => {
+          if (!isActive) e.currentTarget.style.background = 'transparent'
+        }}
       >
         <item.icon className="h-4 w-4" />
         {item.label}
@@ -55,20 +65,27 @@ export function SidebarNav({ role, staffName }: SidebarNavProps) {
   return (
     <div className="flex h-full flex-col">
       {/* Main navigation */}
-      <nav className="flex flex-col gap-1 p-3">
+      <nav className="flex flex-col gap-1 px-3 pt-4">
         {mainNavItems.map((item) => renderLink(item))}
       </nav>
 
       {/* Bottom section: Settings, Account, User info, Logout */}
-      <div className="mt-auto border-t p-3">
+      <div className="mt-auto px-3 pb-4">
+        <div className="mb-2" style={{ borderTop: '1px solid hsl(var(--sidebar-border))' }} />
         <nav className="flex flex-col gap-1">
           {bottomNavItems
             .filter((item) => !item.roles || (role && item.roles.includes(role)))
             .map((item) => renderLink(item))}
         </nav>
-        <div className="mt-2 flex items-center justify-between border-t pt-2">
-          <span className="truncate text-sm font-medium">{staffName ?? ''}</span>
-          <Button variant="ghost" size="icon" onClick={handleLogout} title="Sign out">
+        <div className="mt-3 flex items-center justify-between rounded-lg px-3 py-2"
+          style={{ background: 'hsl(201 50% 15%)' }}>
+          <span className="truncate text-sm font-medium"
+            style={{ color: 'hsl(var(--sidebar-foreground))' }}>
+            {staffName ?? ''}
+          </span>
+          <Button variant="ghost" size="icon" onClick={handleLogout} title="Sign out"
+            className="h-8 w-8 hover:bg-white/10"
+            style={{ color: 'hsl(var(--sidebar-muted-foreground))' }}>
             <LogOut className="h-4 w-4" />
           </Button>
         </div>

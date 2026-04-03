@@ -30,16 +30,19 @@ export function TopBar({ practiceId }: TopBarProps) {
   })
 
   return (
-    <header className="flex h-14 items-center border-b px-6">
-      <span className="text-sm text-muted-foreground">{dateStr}, {timeStr}</span>
+    <header className="flex h-16 items-center border-b border-border bg-card px-6">
       {practice?.show_on_main && (
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-baseline gap-2">
-          <span className="text-sm font-semibold">{practice.clinic_name}</span>
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-semibold text-foreground">{practice.clinic_name}</span>
           {practice.slogan && (
             <span className="text-xs text-muted-foreground italic">{practice.slogan}</span>
           )}
         </div>
       )}
+      <div className="ml-auto flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">{dateStr}</span>
+        <span className="text-sm font-medium text-foreground">{timeStr}</span>
+      </div>
     </header>
   )
 }

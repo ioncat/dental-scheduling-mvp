@@ -14,7 +14,7 @@ interface TimeGridHeaderProps {
 
 export default function TimeGridHeader({ doctors, hasUnassigned, unassignedCount }: TimeGridHeaderProps) {
   return (
-    <div className="flex border-b bg-card">
+    <div className="flex border-b bg-card pr-[var(--scrollbar-w,0px)]">
       {/* Corner spacer — matches TimeAxis width */}
       <div
         className="shrink-0 border-r"

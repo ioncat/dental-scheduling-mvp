@@ -26,7 +26,7 @@ export function PatientsTable({ patients }: PatientsTableProps) {
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-lg border bg-card shadow-sm">
       <Table>
         <TableHeader>
           <TableRow>

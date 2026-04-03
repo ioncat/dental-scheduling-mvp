@@ -6,6 +6,7 @@ import { useCurrentStaff } from '@/hooks/useCurrentStaff'
 import { PracticeSettingsForm } from '@/components/settings/PracticeSettingsForm'
 import { StaffTable } from '@/components/settings/StaffTable'
 import { InviteStaffModal } from '@/components/settings/InviteStaffModal'
+import { SystemSettings } from '@/components/settings/SystemSettings'
 
 export default function SettingsPage() {
   const { staff } = useCurrentStaff()
@@ -19,6 +20,7 @@ export default function SettingsPage() {
         <TabsList>
           <TabsTrigger value="practice">Practice</TabsTrigger>
           <TabsTrigger value="staff">Staff</TabsTrigger>
+          <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
 
         <TabsContent value="practice" className="mt-4">
@@ -40,6 +42,10 @@ export default function SettingsPage() {
             onOpenChange={setInviteOpen}
             practiceId={staff?.practice_id}
           />
+        </TabsContent>
+
+        <TabsContent value="system" className="mt-4">
+          <SystemSettings />
         </TabsContent>
       </Tabs>
     </div>

@@ -95,8 +95,11 @@ export default function LoginPage() {
   if (state === 'success') {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
-        <Card className="w-[400px]">
-          <CardHeader>
+        <Card className="w-[400px] shadow-lg">
+          <CardHeader className="items-center text-center">
+            <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
+              <span className="text-xl font-bold text-primary-foreground">D</span>
+            </div>
             <CardTitle>Check your email</CardTitle>
             <CardDescription>
               We sent a magic link to <strong>{email}</strong>. Click the link to sign in.
@@ -109,9 +112,12 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen items-center justify-center bg-background">
-      <Card className="w-[400px]">
-        <CardHeader>
-          <CardTitle>Dental Scheduling</CardTitle>
+      <Card className="w-[400px] shadow-lg">
+        <CardHeader className="items-center text-center">
+          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
+            <span className="text-xl font-bold text-primary-foreground">D</span>
+          </div>
+          <CardTitle className="text-xl">Dental Scheduling</CardTitle>
           <CardDescription>Sign in to continue</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
