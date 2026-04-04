@@ -51,6 +51,42 @@ I want to block rescheduling unassigned appointments
 So that doctor assignment happens first.
 
 ### Acceptance Criteria
-Given appointment status unassigned  
-When reschedule attempted  
-Then operation rejected  
+Given appointment status unassigned
+When reschedule attempted
+Then operation rejected
+
+---
+
+## Technical Debt — Backlog
+
+Items identified during audit (2026-04-03). Not user stories, but engineering tasks required before production.
+
+### TD-001: Remove `any` from Schedule Code
+- **What:** Critical schedule components use `any` for query results and filter callbacks
+- **Why:** With `strict: true` enabled, `any` bypasses type safety in the most important business flow
+- **Scope:** `schedule.tsx`, related hooks and repositories
+- **Priority:** P0
+
+### TD-002: Auto-generate TypeScript Types from Supabase Schema
+- **What:** `database.types.ts` is maintained manually. It can drift from the actual SQL schema.
+- **Why:** Manual sync breaks first when schema evolves (new fields, enums, policies)
+- **Fix:** `supabase gen types typescript` → CI check
+- **Priority:** P0
+
+### TD-003: Add Testing Infrastructure
+- **What:** No test framework, no test scripts in `package.json`, zero tests
+- **Why:** Quality checks are limited to `tsc` build. Behavioral regressions and domain logic errors are undetectable.
+- **Scope:** Vitest setup, smoke tests for key flows (auth, create appointment, reassign)
+- **Priority:** P1
+
+### TD-004: Optimize Frontend Bundle
+- **What:** Production build chunk ~716 kB, Vite warns about size
+- **Why:** Slow first load on weak devices/networks
+- **Fix:** Lazy-load route pages, review large imports, code splitting
+- **Priority:** P1
+
+### TD-005: Error Boundary & Centralized Logging
+- **What:** Errors handled via local state/banner, no central error boundary, no external logging
+- **Why:** Incidents hard to diagnose in pilot, especially for intermittent failures
+- **Fix:** React Error Boundary + Sentry/equivalent
+- **Priority:** P2

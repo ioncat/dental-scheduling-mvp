@@ -44,7 +44,7 @@ Then I see a centered card with the "D" logo and shadow
 
 ---
 
-## Story 12.2 — Switchable Theme System
+## Story 12.2 — Switchable Theme System (Done)
 
 ### User Story
 As a Developer
@@ -81,7 +81,7 @@ Then `:root` fallback applies the default "dental-practice" palette
 
 ---
 
-## Story 12.2.1 — Light / Dark Mode per Theme
+## Story 12.2.1 — Light / Dark Mode per Theme (Backlog)
 
 ### User Story
 As a User
@@ -120,7 +120,7 @@ Then it respects the OS preference (`prefers-color-scheme`) as default
 
 ---
 
-## Story 12.3 — Centered Layout & Glassmorphism for Large Screens
+## Story 12.3 — Centered Layout & Glassmorphism for Large Screens (Done)
 
 ### User Story
 As a User on a large monitor (27"+)
@@ -169,7 +169,7 @@ Then the layout behaves as full-width regardless of settings (no visual differen
 
 ---
 
-## Story 12.4 — Persist UI Settings in Database
+## Story 12.4 — Persist UI Settings in Database (Backlog)
 
 ### User Story
 As an Admin
@@ -207,6 +207,48 @@ Then it falls back to `localStorage` cache or defaults
 ### Dependencies
 - Story 12.3 (all settings exist and work via `localStorage`)
 - Epic 2 (Practice Management — extends practice settings)
+
+---
+
+## Story 12.5 — Configurable Clinic Working Hours
+
+### User Story
+As an Admin
+I want to configure the clinic's working hours (start and end of the day)
+So that the schedule grid reflects the actual operating hours of the clinic, not a hardcoded range.
+
+### Acceptance Criteria
+Given I open Settings → System (or Practice)
+When I set working hours (e.g. 09:00–18:00)
+Then the schedule grid shows only this time range
+
+Given no custom hours are configured
+When the schedule loads
+Then the default range (08:00–20:00) is used
+
+Given I change the hours
+When I save and return to Schedule
+Then the grid updates immediately without page reload
+
+### Edge Cases
+- Working hours shorter than doctor availability — doctor availability outside clinic hours is ignored
+- Very early/late hours (06:00–23:00) — grid scales accordingly
+- Invalid range (end < start) — prevent saving, show validation error
+
+### Out of Scope
+- Per-day different hours (Mon 09–18, Sat 09–14) — may be added later
+- Multiple shifts per day
+
+### Notes for Engineering
+- Replace `DAY_START_HOUR` / `DAY_END_HOUR` constants in `timeGrid.ts` with dynamic values
+- Store in Practice Settings (DB via Story 12.4, localStorage until then)
+- All dependent calculations (`TOTAL_HEIGHT_PX`, `TOTAL_MINUTES`, `yToTime`, `timeToY`, etc.) must use the configurable values
+- UI: two time pickers or dropdowns in System Settings
+
+### Dependencies
+- Story 12.4 (DB persistence) — optional, can use localStorage initially
+
+**Status:** Backlog
 
 ---
 

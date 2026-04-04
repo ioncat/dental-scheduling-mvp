@@ -40,9 +40,14 @@ Each item includes context on why it was deferred and when it may be revisited.
 ## User Experience
 
 ### Dark Mode
-- **Context:** shadcn/ui CSS variables are already set up for dark mode. Toggle implementation is straightforward but was not prioritized for MVP.
+- **Context:** shadcn/ui CSS variables are already set up for dark mode. Theme infrastructure (`data-theme`) is in place. Each theme needs a dark variant.
 - **Revisit:** Low effort, can be added anytime.
-- **Reference:** Story 1.4
+- **Reference:** Story 12.2.1
+
+### Configurable Clinic Working Hours
+- **Context:** Schedule grid uses hardcoded `DAY_START_HOUR=8` / `DAY_END_HOUR=20` in `timeGrid.ts`. These should be Practice-level settings (e.g. a clinic that works 09:00–18:00 vs 07:00–21:00). Currently not configurable via UI.
+- **Revisit:** When implementing Practice Settings expansion or before pilot deployment.
+- **Reference:** `app/src/lib/timeGrid.ts`, System Settings
 
 ### Self-Edit Contact Details
 - **Context:** Staff members currently cannot edit their own phone, email, or messenger details. Only admins can modify staff records. All users should be able to update their own contact info (but not name or role).

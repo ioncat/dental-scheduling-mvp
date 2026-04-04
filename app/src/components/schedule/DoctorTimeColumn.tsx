@@ -65,25 +65,53 @@ export default function DoctorTimeColumn({
     [appointments],
   )
 
-  // Build a set of slot indices that are available (inside availability, outside appointments & time-off)
-  const availableSlotIndices = useMemo(() => {
-    const set = new Set<number>()
-    if (!canManage) return set
+  // Slot status: 'available' | reason string for each 30-min slot
+  type SlotStatus = { available: true } | { available: false; reason: string }
+
+  const slotStatuses = useMemo(() => {
+    const statuses: SlotStatus[] = []
 
     for (let i = 0; i < totalSlots; i++) {
       const slotStartMin = (DAY_START_HOUR * 60) + i * SLOT_MINUTES
       const slotEndMin = slotStartMin + SLOT_MINUTES
 
-      // Must be inside at least one availability window
+      if (!canManage) {
+        statuses.push({ available: false, reason: 'View only' })
+        continue
+      }
+
+      // Check availability first
       const inAvailability = availability.some((a) => {
         const [ah, am] = a.start_time.split(':').map(Number)
         const [eh, em] = a.end_time.split(':').map(Number)
         return slotStartMin >= ah! * 60 + am! && slotEndMin <= eh! * 60 + em!
       })
-      if (!inAvailability) continue
+      if (!inAvailability) {
+        if (availability.length === 0) {
+          statuses.push({ available: false, reason: 'No working hours today' })
+        } else {
+          const windows = availability.map(a => `${a.start_time.slice(0,5)}–${a.end_time.slice(0,5)}`).join(', ')
+          statuses.push({ available: false, reason: `Outside working hours (${windows})` })
+        }
+        continue
+      }
 
-      // Must not overlap any appointment
-      const overlapsAppointment = appointments.some((apt) => {
+      // Check time-off overlap
+      const matchedTimeOff = timeOff.find((entry) => {
+        const toStart = new Date(entry.start_datetime)
+        const toEnd = new Date(entry.end_datetime)
+        const toStartMin = toStart.getHours() * 60 + toStart.getMinutes()
+        const toEndMin = toEnd.getHours() * 60 + toEnd.getMinutes()
+        return slotStartMin < toEndMin && slotEndMin > toStartMin
+      })
+      if (matchedTimeOff) {
+        const typeLabel = matchedTimeOff.type === 'vacation' ? 'Vacation' : matchedTimeOff.type === 'sick' ? 'Sick leave' : 'Blocked'
+        statuses.push({ available: false, reason: typeLabel })
+        continue
+      }
+
+      // Check appointment overlap
+      const matchedApt = appointments.find((apt) => {
         if (apt.status === 'cancelled') return false
         const aptStart = new Date(apt.start_time)
         const aptEnd = new Date(apt.end_time)
@@ -91,34 +119,39 @@ export default function DoctorTimeColumn({
         const aptEndMin = aptEnd.getHours() * 60 + aptEnd.getMinutes()
         return slotStartMin < aptEndMin && slotEndMin > aptStartMin
       })
-      if (overlapsAppointment) continue
+      if (matchedApt) {
+        statuses.push({ available: false, reason: `Booked: ${matchedApt.patient?.full_name ?? 'Patient'}` })
+        continue
+      }
 
-      // Must not overlap time-off
-      const overlapsTimeOff = timeOff.some((entry) => {
-        const toStart = new Date(entry.start_datetime)
-        const toEnd = new Date(entry.end_datetime)
-        const toStartMin = toStart.getHours() * 60 + toStart.getMinutes()
-        const toEndMin = toEnd.getHours() * 60 + toEnd.getMinutes()
-        return slotStartMin < toEndMin && slotEndMin > toStartMin
-      })
-      if (overlapsTimeOff) continue
-
-      set.add(i)
+      statuses.push({ available: true })
     }
-    return set
+    return statuses
   }, [canManage, availability, appointments, timeOff])
+
+  // Set of available indices for quick check
+  const availableSlotIndices = useMemo(() => {
+    const set = new Set<number>()
+    slotStatuses.forEach((s, i) => { if (s.available) set.add(i) })
+    return set
+  }, [slotStatuses])
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!canManage) return
+    // Don't show tooltip when hovering appointment blocks
+    if ((e.target as HTMLElement).closest('button')) {
+      setHoverSlotIndex(null)
+      return
+    }
     const rect = e.currentTarget.getBoundingClientRect()
     const relativeY = e.clientY - rect.top + e.currentTarget.scrollTop
     const slotIndex = Math.floor(relativeY / SLOT_HEIGHT_PX)
-    if (slotIndex >= 0 && slotIndex < totalSlots && availableSlotIndices.has(slotIndex)) {
+    if (slotIndex >= 0 && slotIndex < totalSlots) {
       setHoverSlotIndex(slotIndex)
     } else {
       setHoverSlotIndex(null)
     }
-  }, [canManage, availableSlotIndices])
+  }, [canManage])
 
   const handleMouseLeave = useCallback(() => {
     setHoverSlotIndex(null)
@@ -148,7 +181,7 @@ export default function DoctorTimeColumn({
 
   return (
     <div
-      className={`relative min-w-[220px] flex-1 border-r bg-muted/20 last:border-r-0${canManage ? ' cursor-pointer' : ''}`}
+      className={`relative min-w-[220px] flex-1 border-r bg-muted/20 last:border-r-0${canManage ? ' cursor-crosshair' : ''}`}
       style={{ height: TOTAL_HEIGHT_PX }}
       onClick={handleColumnClick}
       onMouseMove={handleMouseMove}
@@ -193,13 +226,40 @@ export default function DoctorTimeColumn({
         )
       })}
 
-      {/* Hover highlight */}
-      {hoverSlotIndex !== null && (
-        <div
-          className="pointer-events-none absolute left-1 right-1 z-[1] rounded-md border-2 border-primary/40 bg-primary/10 transition-all duration-75"
-          style={{ top: hoverSlotIndex * SLOT_HEIGHT_PX + 1, height: SLOT_HEIGHT_PX - 2 }}
-        />
-      )}
+      {/* Hover highlight + tooltip */}
+      {hoverSlotIndex !== null && (() => {
+        const status = slotStatuses[hoverSlotIndex]
+        const isAvail = status?.available
+        const slotMin = DAY_START_HOUR * 60 + hoverSlotIndex * SLOT_MINUTES
+        const hh = String(Math.floor(slotMin / 60)).padStart(2, '0')
+        const mm = String(slotMin % 60).padStart(2, '0')
+        const timeLabel = `${hh}:${mm}`
+        return (
+          <div
+            className="pointer-events-none absolute left-1 right-1 z-[3] transition-all duration-75"
+            style={{ top: hoverSlotIndex * SLOT_HEIGHT_PX + 1, height: SLOT_HEIGHT_PX - 2 }}
+          >
+            {/* Slot highlight */}
+            <div className={`h-full w-full rounded-md border-2 ${
+              isAvail
+                ? 'border-primary/40 bg-primary/10'
+                : 'border-muted-foreground/20 bg-muted/30'
+            }`} />
+            {/* Tooltip */}
+            <div className={`absolute left-1/2 -translate-x-1/2 -top-9 z-[4] whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium shadow-md ${
+              isAvail
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-foreground text-background'
+            }`}>
+              {isAvail ? `${timeLabel} — Click to book` : `${timeLabel} — ${(status as { reason: string }).reason}`}
+              {/* Arrow */}
+              <div className={`absolute left-1/2 -translate-x-1/2 -bottom-1 h-2 w-2 rotate-45 ${
+                isAvail ? 'bg-primary' : 'bg-foreground'
+              }`} />
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Appointment blocks */}
       {positioned.map((apt) => (
