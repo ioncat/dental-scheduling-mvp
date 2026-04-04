@@ -2,7 +2,11 @@ const STORAGE_KEY = 'app-theme'
 const DEFAULT_THEME = 'dental-practice'
 
 export const THEMES = [
-  { id: 'dental-practice', name: 'Dental Practice', description: 'Fresh Blue + Smile Yellow' },
+  { id: 'dental-practice', name: 'Default', description: 'Fresh Blue + Smile Yellow' },
+  { id: 'nature-distilled', name: 'Nature Distilled', description: 'Warm craft paper + Terracotta' },
+  { id: 'eink-paper', name: 'E-Ink Paper', description: 'Clean minimal + Off-white' },
+  { id: 'vintage-warm', name: 'Vintage Warm', description: 'Sepia analog + Muted teal' },
+  { id: 'legacy', name: 'Legacy', description: 'Original black & white' },
 ] as const
 
 export type ThemeId = (typeof THEMES)[number]['id']

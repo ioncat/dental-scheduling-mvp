@@ -29,7 +29,7 @@ const TimeGridBody = forwardRef<HTMLDivElement, TimeGridBodyProps>(
   ({ columns, unassigned, selectedDate, canManage, isToday, onAppointmentClick, onSlotClick }, ref) => {
     return (
       <div ref={ref} className="relative overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
-        <div className="relative flex" style={{ minHeight: TOTAL_HEIGHT_PX }}>
+        <div className="relative flex" style={{ minHeight: TOTAL_HEIGHT_PX, paddingTop: 8 }}>
           {/* Time axis (sticky left) */}
           <div className="sticky left-0 z-10">
             <TimeAxis />

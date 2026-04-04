@@ -8,9 +8,15 @@ interface TopBarProps {
 function useCurrentTime() {
   const [now, setNow] = useState(() => new Date())
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60_000)
-    return () => clearInterval(id)
-  }, [])
+    let intervalId: ReturnType<typeof setInterval>
+    // Align first tick to the next minute boundary, then tick every 60s
+    const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds()
+    const timeoutId = setTimeout(() => {
+      setNow(new Date())
+      intervalId = setInterval(() => setNow(new Date()), 60_000)
+    }, msUntilNextMinute)
+    return () => { clearTimeout(timeoutId); clearInterval(intervalId) }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   return now
 }
 

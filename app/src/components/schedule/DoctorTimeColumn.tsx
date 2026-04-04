@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import {
   TOTAL_HEIGHT_PX,
   SLOT_HEIGHT_PX,
   DAY_START_HOUR,
   DAY_END_HOUR,
+  SLOT_MINUTES,
   timeToY,
   durationToHeight,
   hhmmToY,
@@ -51,6 +52,8 @@ export default function DoctorTimeColumn({
   onAppointmentClick,
   onSlotClick,
 }: DoctorTimeColumnProps) {
+  const [hoverSlotIndex, setHoverSlotIndex] = useState<number | null>(null)
+
   // Pre-compute appointment positions
   const positioned = useMemo(
     () =>
@@ -62,6 +65,65 @@ export default function DoctorTimeColumn({
     [appointments],
   )
 
+  // Build a set of slot indices that are available (inside availability, outside appointments & time-off)
+  const availableSlotIndices = useMemo(() => {
+    const set = new Set<number>()
+    if (!canManage) return set
+
+    for (let i = 0; i < totalSlots; i++) {
+      const slotStartMin = (DAY_START_HOUR * 60) + i * SLOT_MINUTES
+      const slotEndMin = slotStartMin + SLOT_MINUTES
+
+      // Must be inside at least one availability window
+      const inAvailability = availability.some((a) => {
+        const [ah, am] = a.start_time.split(':').map(Number)
+        const [eh, em] = a.end_time.split(':').map(Number)
+        return slotStartMin >= ah! * 60 + am! && slotEndMin <= eh! * 60 + em!
+      })
+      if (!inAvailability) continue
+
+      // Must not overlap any appointment
+      const overlapsAppointment = appointments.some((apt) => {
+        if (apt.status === 'cancelled') return false
+        const aptStart = new Date(apt.start_time)
+        const aptEnd = new Date(apt.end_time)
+        const aptStartMin = aptStart.getHours() * 60 + aptStart.getMinutes()
+        const aptEndMin = aptEnd.getHours() * 60 + aptEnd.getMinutes()
+        return slotStartMin < aptEndMin && slotEndMin > aptStartMin
+      })
+      if (overlapsAppointment) continue
+
+      // Must not overlap time-off
+      const overlapsTimeOff = timeOff.some((entry) => {
+        const toStart = new Date(entry.start_datetime)
+        const toEnd = new Date(entry.end_datetime)
+        const toStartMin = toStart.getHours() * 60 + toStart.getMinutes()
+        const toEndMin = toEnd.getHours() * 60 + toEnd.getMinutes()
+        return slotStartMin < toEndMin && slotEndMin > toStartMin
+      })
+      if (overlapsTimeOff) continue
+
+      set.add(i)
+    }
+    return set
+  }, [canManage, availability, appointments, timeOff])
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!canManage) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const relativeY = e.clientY - rect.top + e.currentTarget.scrollTop
+    const slotIndex = Math.floor(relativeY / SLOT_HEIGHT_PX)
+    if (slotIndex >= 0 && slotIndex < totalSlots && availableSlotIndices.has(slotIndex)) {
+      setHoverSlotIndex(slotIndex)
+    } else {
+      setHoverSlotIndex(null)
+    }
+  }, [canManage, availableSlotIndices])
+
+  const handleMouseLeave = useCallback(() => {
+    setHoverSlotIndex(null)
+  }, [])
+
   function handleColumnClick(e: React.MouseEvent<HTMLDivElement>) {
     if (!canManage) return
     // Don't trigger if clicking on an appointment block
@@ -69,6 +131,10 @@ export default function DoctorTimeColumn({
     const rect = e.currentTarget.getBoundingClientRect()
     const relativeY = e.clientY - rect.top + e.currentTarget.scrollTop
     const { hours, minutes } = yToTime(relativeY)
+
+    // Only allow click on available slots
+    const slotIndex = Math.floor(relativeY / SLOT_HEIGHT_PX)
+    if (!availableSlotIndices.has(slotIndex)) return
 
     // Build 30-min slot
     const endMins = minutes + 30
@@ -82,9 +148,11 @@ export default function DoctorTimeColumn({
 
   return (
     <div
-      className="relative min-w-[220px] flex-1 border-r bg-muted/20 last:border-r-0"
+      className={`relative min-w-[220px] flex-1 border-r bg-muted/20 last:border-r-0${canManage ? ' cursor-pointer' : ''}`}
       style={{ height: TOTAL_HEIGHT_PX }}
       onClick={handleColumnClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Grid lines (30-min) */}
       {Array.from({ length: totalSlots }, (_, i) => (
@@ -125,6 +193,14 @@ export default function DoctorTimeColumn({
         )
       })}
 
+      {/* Hover highlight */}
+      {hoverSlotIndex !== null && (
+        <div
+          className="pointer-events-none absolute left-1 right-1 z-[1] rounded-md border-2 border-primary/40 bg-primary/10 transition-all duration-75"
+          style={{ top: hoverSlotIndex * SLOT_HEIGHT_PX + 1, height: SLOT_HEIGHT_PX - 2 }}
+        />
+      )}
+
       {/* Appointment blocks */}
       {positioned.map((apt) => (
         <AppointmentBlock
@@ -140,10 +216,6 @@ export default function DoctorTimeColumn({
         />
       ))}
 
-      {/* Click hint for empty available areas */}
-      {canManage && (
-        <div className="pointer-events-none absolute inset-0 z-0 cursor-pointer" />
-      )}
     </div>
   )
 }

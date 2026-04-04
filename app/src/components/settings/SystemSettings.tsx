@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Check, Upload, X } from 'lucide-react'
+import { Upload, X } from 'lucide-react'
 
 const MAX_IMAGE_WIDTH = 1920
 
@@ -70,26 +70,21 @@ export function SystemSettings() {
           <CardDescription>Choose the visual theme for the application.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {THEMES.map((theme) => (
-              <button
-                key={theme.id}
-                onClick={() => handleThemeSelect(theme.id)}
-                className={`relative flex flex-col items-start gap-1 rounded-lg border-2 p-4 text-left transition-colors ${
-                  currentTheme === theme.id
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/40'
-                }`}
-              >
-                {currentTheme === theme.id && (
-                  <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-                    <Check className="h-3 w-3 text-primary-foreground" />
-                  </div>
-                )}
-                <span className="text-sm font-semibold">{theme.name}</span>
-                <span className="text-xs text-muted-foreground">{theme.description}</span>
-              </button>
-            ))}
+          <div className="max-w-sm space-y-2">
+            <Label>Color Palette</Label>
+            <Select
+              value={currentTheme}
+              onValueChange={(v) => handleThemeSelect(v as ThemeId)}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {THEMES.map((theme) => (
+                  <SelectItem key={theme.id} value={theme.id}>
+                    {theme.name} — {theme.description}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>

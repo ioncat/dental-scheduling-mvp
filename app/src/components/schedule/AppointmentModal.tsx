@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,8 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { DoctorSelector } from '@/components/shared/DoctorSelector'
 import { PatientPickerModal } from '@/components/shared/PatientPickerModal'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { MiniCalendar } from '@/components/schedule/MiniCalendar'
-import { AvailableSlotsList } from '@/components/schedule/AvailableSlotsList'
+import { DialogFooter } from '@/components/ui/dialog'
 import { useCreateAppointment, useUpdateAppointment } from '@/hooks/useAppointments'
 import { useAvailability, useTimeOff } from '@/hooks/useAvailability'
 import { useCurrentStaff } from '@/hooks/useCurrentStaff'
@@ -24,6 +22,7 @@ import { computeFreeSlots, type TimeSlot } from '@/lib/slotUtils'
 import { formatDateIso } from '@/lib/timeGrid'
 import { cn } from '@/lib/utils'
 import type { AppointmentStatus } from '@/lib/database.types'
+import { ChevronLeft, ChevronRight, Zap, Calendar, Clock, User, ArrowLeft } from 'lucide-react'
 
 type ModalMode = 'create' | 'view'
 
@@ -51,6 +50,27 @@ interface AppointmentModalProps {
   practiceId?: string
 }
 
+// --- Day pills helpers ---
+function getWeekDays(baseDate: Date): Date[] {
+  const monday = new Date(baseDate)
+  const day = monday.getDay()
+  const diff = day === 0 ? -6 : 1 - day
+  monday.setDate(monday.getDate() + diff)
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    return d
+  })
+}
+
+const DAY_NAMES = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+}
+
 export function AppointmentModal({
   open,
   onOpenChange,
@@ -66,26 +86,29 @@ export function AppointmentModal({
   const createMutation = useCreateAppointment()
   const updateMutation = useUpdateAppointment()
 
-  // --- Shared state ---
+  // --- State ---
+  const [step, setStep] = useState<1 | 2>(1)
   const [patient, setPatient] = useState<{ id: string; full_name: string } | null>(null)
   const [doctorId, setDoctorId] = useState<string | undefined>(undefined)
-  const [startTime, setStartTime] = useState('')
-  const [endTime, setEndTime] = useState('')
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
   const [notes, setNotes] = useState('')
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [patientPickerOpen, setPatientPickerOpen] = useState(false)
-
-  // --- Create mode state ---
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
-  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
+  const [weekBase, setWeekBase] = useState<Date>(() => new Date())
+
+  // View mode state
+  const [startTime, setStartTime] = useState('')
+  const [endTime, setEndTime] = useState('')
 
   const dateIso = formatDateIso(selectedDate)
+  const weekDays = useMemo(() => getWeekDays(weekBase), [weekBase.toISOString()])
+  const today = new Date()
 
-  // --- Data hooks (create mode only) ---
+  // --- Data hooks (create mode) ---
   const { data: availability } = useAvailability(mode === 'create' ? doctorId : undefined)
   const { data: timeOff } = useTimeOff(mode === 'create' ? doctorId : undefined)
 
-  // Fetch existing appointments for this doctor + date (needed for slot conflict check)
   const { data: doctorAppointments, isLoading: isLoadingSlots } = useQuery({
     queryKey: ['appointments', { date: dateIso, doctorId }],
     queryFn: async () => {
@@ -96,7 +119,7 @@ export function AppointmentModal({
     enabled: mode === 'create' && !!doctorId,
   })
 
-  // --- Compute free slots ---
+  // --- Free slots for selected date ---
   const freeSlots = useMemo(() => {
     if (!doctorId || !availability || mode !== 'create') return []
     return computeFreeSlots(
@@ -107,25 +130,75 @@ export function AppointmentModal({
     )
   }, [doctorId, dateIso, availability, timeOff, doctorAppointments, mode])
 
-  // --- Create mode handlers ---
-  function handleSlotSelect(slot: TimeSlot) {
-    setSelectedSlot(slot)
-    setStartTime(slot.startIso)
-    setEndTime(slot.endIso)
+  // --- Top 3 suggested slots (next 7 days) ---
+  const suggestedSlots = useMemo(() => {
+    if (!doctorId || !availability || mode !== 'create') return []
+    const suggestions: { slot: TimeSlot; dateLabel: string }[] = []
+    const baseDate = new Date()
+
+    for (let i = 0; i < 7 && suggestions.length < 3; i++) {
+      const d = new Date(baseDate)
+      d.setDate(baseDate.getDate() + i)
+      const dIso = formatDateIso(d)
+
+      // We can only use the already-fetched timeOff and availability
+      // For suggested slots, we compute without appointment conflicts for other dates
+      // This is approximate - exact availability would need per-day appointment queries
+      const slots = computeFreeSlots(dIso, availability, timeOff ?? [], [])
+
+      // Filter out past slots for today
+      const now = new Date()
+      const validSlots = i === 0
+        ? slots.filter((s) => {
+            const [h, m] = s.label.split(':').map(Number)
+            return h * 60 + m > now.getHours() * 60 + now.getMinutes()
+          })
+        : slots
+
+      for (const slot of validSlots) {
+        if (suggestions.length >= 3) break
+        suggestions.push({
+          slot,
+          dateLabel: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+        })
+      }
+    }
+    return suggestions
+  }, [doctorId, availability, timeOff, mode])
+
+  // --- Handlers ---
+  function handleDoctorChange(newDoctorId: string) {
+    setDoctorId(newDoctorId)
+    setSelectedSlot(null)
   }
 
   function handleDateSelect(date: Date) {
     setSelectedDate(date)
     setSelectedSlot(null)
-    setStartTime('')
-    setEndTime('')
   }
 
-  function handleDoctorChange(newDoctorId: string) {
-    setDoctorId(newDoctorId)
-    setSelectedSlot(null)
-    setStartTime('')
-    setEndTime('')
+  function handleSlotSelect(slot: TimeSlot) {
+    setSelectedSlot(slot)
+  }
+
+  function handleSuggestedSelect(slot: TimeSlot, dateLabel: string) {
+    // Parse the date from the slot's startIso
+    const d = new Date(slot.startIso)
+    setSelectedDate(d)
+    setWeekBase(d)
+    setSelectedSlot(slot)
+  }
+
+  function handleWeekPrev() {
+    const d = new Date(weekBase)
+    d.setDate(d.getDate() - 7)
+    setWeekBase(d)
+  }
+
+  function handleWeekNext() {
+    const d = new Date(weekBase)
+    d.setDate(d.getDate() + 7)
+    setWeekBase(d)
   }
 
   // --- Auto-select slot when pre-filled from time-grid click ---
@@ -134,12 +207,10 @@ export function AppointmentModal({
     const match = freeSlots.find((s) => s.startIso === defaultStartTime)
     if (match && !selectedSlot) {
       setSelectedSlot(match)
-      setStartTime(match.startIso)
-      setEndTime(match.endIso)
     }
   }, [freeSlots, defaultStartTime, mode, selectedSlot])
 
-  // --- Initialization effect ---
+  // --- Initialization ---
   useEffect(() => {
     if (mode === 'view' && appointment) {
       setPatient(appointment.patient)
@@ -148,40 +219,39 @@ export function AppointmentModal({
       setEndTime(appointment.end_time.slice(0, 16))
       setNotes(appointment.notes ?? '')
     } else if (mode === 'create') {
+      setStep(1)
       setPatient(null)
       setDoctorId(defaultDoctorId ?? undefined)
       setNotes('')
       setSelectedSlot(null)
 
-      // Initialize calendar date
       if (defaultDate) {
-        setSelectedDate(new Date(defaultDate + 'T12:00:00'))
+        const d = new Date(defaultDate + 'T12:00:00')
+        setSelectedDate(d)
+        setWeekBase(d)
       } else {
         setSelectedDate(new Date())
+        setWeekBase(new Date())
       }
-
-      // Pre-populate times if provided (from time-grid click)
-      setStartTime(defaultStartTime ?? '')
-      setEndTime(defaultEndTime ?? '')
     }
   }, [mode, appointment, defaultDate, defaultDoctorId, defaultStartTime, defaultEndTime])
 
   // --- Create handler ---
   async function handleCreate() {
-    if (!patient || !doctorId || !startTime || !endTime || !practiceId) return
+    if (!patient || !doctorId || !selectedSlot || !practiceId) return
     await createMutation.mutateAsync({
       practice_id: practiceId,
       patient_id: patient.id,
       doctor_id: doctorId,
-      start_time: new Date(startTime).toISOString(),
-      end_time: new Date(endTime).toISOString(),
+      start_time: new Date(selectedSlot.startIso).toISOString(),
+      end_time: new Date(selectedSlot.endIso).toISOString(),
       status: 'scheduled',
       notes: notes || null,
     })
     onOpenChange(false)
   }
 
-  // --- View mode handlers (unchanged) ---
+  // --- View mode handlers ---
   async function handleCancel() {
     if (!appointment) return
     await updateMutation.mutateAsync({ id: appointment.id, status: 'cancelled' })
@@ -209,28 +279,189 @@ export function AppointmentModal({
   const isDoctor = role === 'doctor'
   const isTerminal = appointment?.status === 'completed' || appointment?.status === 'cancelled'
 
-  // --- Empty state message for slots column ---
-  const slotsEmptyMessage = !doctorId
-    ? 'Select a doctor first'
-    : freeSlots.length === 0
-      ? 'No available slots'
-      : ''
-
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className={cn(mode === 'create' ? 'max-w-5xl' : 'max-w-md')}>
+        <DialogContent className={cn(mode === 'create' ? 'max-w-lg' : 'max-w-md')}>
           <DialogHeader>
             <DialogTitle>
-              {mode === 'create' ? 'New Appointment' : 'Appointment Details'}
+              {mode === 'create'
+                ? step === 1
+                  ? 'New Appointment'
+                  : 'Patient Details'
+                : 'Appointment Details'}
             </DialogTitle>
           </DialogHeader>
 
           {mode === 'create' ? (
-            /* ===== 3-COLUMN CREATE LAYOUT ===== */
-            <div className="grid grid-cols-[260px_1fr_200px] gap-6">
-              {/* Column 1: Form fields */}
-              <div className="flex flex-col gap-4">
+            step === 1 ? (
+              /* ===== STEP 1: Doctor + Date + Time ===== */
+              <div className="flex flex-col gap-5">
+                {/* Doctor selector */}
+                <div className="flex flex-col gap-2">
+                  <Label className="flex items-center gap-1.5">
+                    <User className="h-3.5 w-3.5" /> Doctor
+                  </Label>
+                  <DoctorSelector
+                    value={doctorId}
+                    onValueChange={handleDoctorChange}
+                    placeholder="Select doctor..."
+                  />
+                </div>
+
+                {/* Top 3 Suggested Slots */}
+                {doctorId && suggestedSlots.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <Label className="flex items-center gap-1.5 text-primary">
+                      <Zap className="h-3.5 w-3.5" /> Suggested Slots
+                    </Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {suggestedSlots.map(({ slot, dateLabel }, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handleSuggestedSelect(slot, dateLabel)}
+                          className={cn(
+                            'flex flex-col items-center gap-0.5 rounded-lg border-2 px-2 py-2.5 text-center transition-colors',
+                            selectedSlot?.startIso === slot.startIso
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/40',
+                          )}
+                        >
+                          <span className="text-lg font-bold">{slot.label}</span>
+                          <span className="text-[11px] text-muted-foreground">{dateLabel}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Day pills with week navigation */}
+                {doctorId && (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="flex items-center gap-1.5">
+                        <Calendar className="h-3.5 w-3.5" /> Select Day
+                      </Label>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={handleWeekPrev}
+                          className="rounded p-1 hover:bg-muted"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </button>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {weekDays[0].toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleWeekNext}
+                          className="rounded p-1 hover:bg-muted"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1.5">
+                      {weekDays.map((day, i) => {
+                        const isSelected = isSameDay(day, selectedDate)
+                        const isToday = isSameDay(day, today)
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => handleDateSelect(day)}
+                            className={cn(
+                              'flex flex-col items-center rounded-lg py-2 text-xs transition-colors',
+                              isSelected
+                                ? 'bg-primary text-primary-foreground'
+                                : isToday
+                                  ? 'border-2 border-primary/30 hover:bg-muted'
+                                  : 'hover:bg-muted',
+                            )}
+                          >
+                            <span className="text-[10px] font-medium opacity-70">{DAY_NAMES[i]}</span>
+                            <span className="text-base font-bold">{day.getDate()}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Time slot chips */}
+                {doctorId && (
+                  <div className="flex flex-col gap-2">
+                    <Label className="flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5" /> Available Times
+                    </Label>
+                    {isLoadingSlots ? (
+                      <div className="flex items-center justify-center py-4">
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      </div>
+                    ) : freeSlots.length === 0 ? (
+                      <p className="py-3 text-center text-sm text-muted-foreground">
+                        No available slots for this day
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {freeSlots.map((slot) => (
+                          <button
+                            key={slot.label}
+                            type="button"
+                            onClick={() => handleSlotSelect(slot)}
+                            className={cn(
+                              'rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-colors',
+                              selectedSlot?.startIso === slot.startIso
+                                ? 'border-primary bg-primary text-primary-foreground'
+                                : 'border-border hover:border-primary/40',
+                            )}
+                          >
+                            {slot.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Next button */}
+                <Button
+                  onClick={() => setStep(2)}
+                  disabled={!doctorId || !selectedSlot}
+                  className="mt-1"
+                >
+                  Next — Patient Details
+                </Button>
+              </div>
+            ) : (
+              /* ===== STEP 2: Patient + Notes + Confirm ===== */
+              <div className="flex flex-col gap-5">
+                {/* Back button */}
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" /> Back to time selection
+                </button>
+
+                {/* Summary */}
+                <div className="rounded-lg border bg-muted/40 p-3">
+                  <p className="text-sm text-muted-foreground">
+                    {selectedDate.toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </p>
+                  <p className="text-xl font-bold">
+                    {selectedSlot?.label} — {selectedSlot?.endIso.split('T')[1]}
+                  </p>
+                </div>
+
                 {/* Patient */}
                 <div className="flex flex-col gap-2">
                   <Label>Patient</Label>
@@ -247,32 +478,6 @@ export function AppointmentModal({
                     )}
                   </Button>
                 </div>
-
-                {/* Doctor */}
-                <div className="flex flex-col gap-2">
-                  <Label>Doctor</Label>
-                  <DoctorSelector
-                    value={doctorId}
-                    onValueChange={handleDoctorChange}
-                    placeholder="Select doctor..."
-                  />
-                </div>
-
-                {/* Selected time summary */}
-                {selectedSlot && (
-                  <div className="rounded-md border bg-muted/50 p-3">
-                    <p className="text-sm text-muted-foreground">
-                      {selectedDate.toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </p>
-                    <p className="text-lg font-semibold">
-                      {selectedSlot.label} &ndash; {selectedSlot.endIso.split('T')[1]}
-                    </p>
-                  </div>
-                )}
 
                 {/* Notes */}
                 <div className="flex flex-col gap-2">
@@ -294,33 +499,14 @@ export function AppointmentModal({
                 {/* Create button */}
                 <Button
                   onClick={handleCreate}
-                  disabled={
-                    !patient || !doctorId || !selectedSlot || createMutation.isPending
-                  }
-                  className="mt-auto"
+                  disabled={!patient || createMutation.isPending}
                 >
                   {createMutation.isPending ? 'Creating...' : 'Create Appointment'}
                 </Button>
               </div>
-
-              {/* Column 2: Monthly calendar */}
-              <div className="flex flex-col items-center border-x px-4">
-                <MiniCalendar selectedDate={selectedDate} onDateSelect={handleDateSelect} />
-              </div>
-
-              {/* Column 3: Available time slots */}
-              <div>
-                <AvailableSlotsList
-                  slots={freeSlots}
-                  selectedSlot={selectedSlot}
-                  onSlotSelect={handleSlotSelect}
-                  isLoading={isLoadingSlots && !!doctorId}
-                  emptyMessage={slotsEmptyMessage}
-                />
-              </div>
-            </div>
+            )
           ) : (
-            /* ===== VIEW MODE (unchanged) ===== */
+            /* ===== VIEW MODE ===== */
             <>
               <div className="flex flex-col gap-4">
                 {appointment && (

@@ -16,6 +16,11 @@ Each item includes context on why it was deferred and when it may be revisited.
 - **Context:** Appointments are rescheduled via edit modal. Drag-and-drop would improve speed but adds significant UI complexity.
 - **Revisit:** Phase 2 (Usability & Workflow Refinement)
 
+### Configurable Appointment Flow Direction (Doctor-first vs Patient-first)
+- **Context:** Current wizard is doctor-centric (select doctor → time → patient). An alternative patient-centric flow (select patient → find nearest doctor with availability) may suit clinics where patients don't request a specific doctor. Both flows use the same data model; difference is UI step order only.
+- **Revisit:** After user testing of current flow + Story 12.4 (DB settings).
+- **Reference:** PDR-005
+
 ---
 
 ## Authentication & Access

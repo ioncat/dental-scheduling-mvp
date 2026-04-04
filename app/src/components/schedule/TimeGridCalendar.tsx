@@ -42,8 +42,8 @@ export default function TimeGridCalendar({
         const y = currentTimeY()
         scrollRef.current.scrollTo({ top: Math.max(0, y - 200), behavior: 'smooth' })
       } else {
-        // Scroll to start of typical working hours (10:00 area)
-        scrollRef.current.scrollTo({ top: 240, behavior: 'smooth' })
+        // Show from the start of the working day (08:00)
+        scrollRef.current.scrollTo({ top: 0 })
       }
     }
   }, [selectedDate, isToday])

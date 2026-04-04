@@ -238,21 +238,29 @@ In `TimeGridCalendar.tsx`, measure scrollbar width via JS (`offsetWidth - client
 On the Schedule page, the first row of the time grid (08:00) is partially hidden behind the header. The label "08:00" is cut off, and the visible grid starts at ~08:30.
 
 **Root Cause:**
-The auto-scroll on mount (`scrollTo`) positions the grid slightly below the top, and the sticky header overlaps the first time slot.
+Two issues: (1) Non-today scroll used `top: 240` which skipped past 08:00 entirely. (2) TimeAxis labels use `-translate-y-1/2` centering, causing the 08:00 label at `y=0` to be clipped by the container overflow.
 
-**Status:** Open
+**Solution:**
+- Changed non-today scroll from `top: 240` to `top: 0` (start from beginning of working day)
+- Added `paddingTop: 8` to TimeGridBody inner container to prevent 08:00 label clipping
+
+**Files:**
+- `app/src/components/schedule/TimeGridCalendar.tsx` — scroll position
+- `app/src/components/schedule/TimeGridBody.tsx` — top padding
+
+**Status:** Resolved
 
 ---
 
 ### BUG-003: Clock in TopBar Drifts from Real Time
 
 **Problem:**
-The clock displayed in the TopBar periodically falls behind the actual system time. The update interval is likely too long or drifts due to `setInterval` timer inaccuracy.
+The clock displayed in the TopBar periodically falls behind the actual system time. The `setInterval(60_000)` starts at an arbitrary point within the minute, accumulating drift.
 
-**Expected Behavior:**
-Clock should always show the current time with no more than 1 second deviation.
+**Solution:**
+Replaced simple `setInterval` with a two-phase approach: first `setTimeout` aligns to the next minute boundary (`(60 - seconds) * 1000 - ms`), then `setInterval(60_000)` maintains the cadence. Clock now updates precisely at minute transitions.
 
-**Likely Fix:**
-Reduce the `setInterval` tick or sync to the next second boundary using `setTimeout` recalculated on each tick.
+**Files:**
+- `app/src/components/layout/TopBar.tsx` — `useCurrentTime` hook
 
-**Status:** Open
+**Status:** Resolved

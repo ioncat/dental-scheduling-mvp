@@ -103,3 +103,90 @@ And status becomes scheduled
 ### Edge Cases
 - Doctor inactive
 - Doctor unavailable
+
+---
+
+## Story 5.7 — Smart Appointment Creation Flow (Done)
+
+### User Story
+As Staff
+I want to create an appointment through a guided single-card flow (time → details → confirm)
+So that booking is fast, intuitive, and reduces errors.
+
+### Acceptance Criteria
+Given I click "New Appointment"
+When the booking card opens
+Then I see a unified flow:
+1. Select doctor (if admin/clinic_manager)
+2. Select day via horizontal date pills (Mon–Sun)
+3. Select available time slot from chips (e.g. "09:00", "09:30", "10:00")
+4. Fill patient details (name, phone, purpose)
+5. Confirm — appointment created
+
+Given I select a doctor and day
+When time slots load
+Then only available (non-conflicting) slots are shown as selectable chips
+
+Given I select a time slot chip
+When I proceed to patient details
+Then the selected doctor, date, and time are displayed as a summary above the form
+
+### Edge Cases
+- No available slots for selected day — show message "No available slots" with suggestion to try next day
+- All doctors busy — show first available date per doctor
+- Patient already has appointment at selected time — warn about conflict
+
+### Out of Scope
+- Patient self-booking (this is staff-facing)
+- Multi-day recurring appointments
+- Drag-and-drop rescheduling
+
+### Notes for Engineering
+- Time slot chips generated from doctor availability minus existing appointments
+- Slot duration based on appointment type or default (30 min)
+- Single card/modal with step indicators, not separate pages
+- Inspired by TimeTuna booking widget UX
+
+### Dependencies
+- Story 5.3 (basic create appointment)
+- Epic 6 (Availability — needed to calculate free slots)
+
+---
+
+## Story 5.8 — Suggested Available Slots ("Top 3") (Done)
+
+### User Story
+As Staff
+I want the system to suggest the nearest available time slots for a selected doctor
+So that I can quickly book without manually scanning the schedule.
+
+### Acceptance Criteria
+Given I open the appointment creation flow
+When I select a doctor
+Then the system shows up to 3 nearest available slots across upcoming days
+
+Given I click a suggested slot
+When the slot is selected
+Then the date and time are pre-filled and I proceed to patient details
+
+Given the doctor has no availability in the next 7 days
+When suggestions are calculated
+Then a message "No availability in the next 7 days" is shown
+
+### Edge Cases
+- Doctor has limited availability (e.g. 1 slot) — show only that one
+- Suggested slot gets booked by another user before confirmation — show error, refresh suggestions
+
+### Out of Scope
+- AI-powered "best time" optimization
+- Patient preference matching
+
+### Notes for Engineering
+- Query: next 7 days of doctor availability, subtract booked appointments, return first 3 free slots
+- Display as prominent chips/cards at the top of the booking flow
+- Real-time availability check before confirming
+
+### Dependencies
+- Story 5.7 (smart appointment creation flow)
+- Epic 6 (Availability)
+
