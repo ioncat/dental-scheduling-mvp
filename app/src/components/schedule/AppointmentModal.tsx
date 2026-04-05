@@ -150,8 +150,8 @@ export function AppointmentModal({
       const now = new Date()
       const validSlots = i === 0
         ? slots.filter((s) => {
-            const [h, m] = s.label.split(':').map(Number)
-            return h * 60 + m > now.getHours() * 60 + now.getMinutes()
+            const [h, m] = s.label.split(':').map(Number) as [number, number]
+            return h! * 60 + m! > now.getHours() * 60 + now.getMinutes()
           })
         : slots
 
@@ -181,7 +181,7 @@ export function AppointmentModal({
     setSelectedSlot(slot)
   }
 
-  function handleSuggestedSelect(slot: TimeSlot, dateLabel: string) {
+  function handleSuggestedSelect(slot: TimeSlot, _dateLabel: string) {
     // Parse the date from the slot's startIso
     const d = new Date(slot.startIso)
     setSelectedDate(d)
@@ -352,7 +352,7 @@ export function AppointmentModal({
                           <ChevronLeft className="h-4 w-4" />
                         </button>
                         <span className="text-xs font-medium text-muted-foreground">
-                          {weekDays[0].toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                          {weekDays[0]!.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                         </span>
                         <button
                           type="button"

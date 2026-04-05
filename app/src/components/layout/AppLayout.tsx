@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import { SidebarNav } from './SidebarNav'
 import { TopBar } from './TopBar'
@@ -74,7 +74,9 @@ export function AppLayout() {
         <div className={`flex flex-1 flex-col overflow-hidden${isCentered ? ' layout-content-area' : ''}`}>
           <TopBar practiceId={staff?.practice_id} />
           <main className="flex-1 overflow-auto p-6">
-            <Outlet />
+            <Suspense fallback={<div className="flex items-center justify-center py-12"><span className="text-muted-foreground">Loading...</span></div>}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>

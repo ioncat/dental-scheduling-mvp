@@ -17,7 +17,7 @@ export function ArchiveButton({ patientId, archived }: ArchiveButtonProps) {
 
   // Check for future appointments (disable archive if any exist)
   const { data: appointments } = useAppointments({ patientId })
-  const hasFutureAppointments = appointments?.some((apt: any) => {
+  const hasFutureAppointments = appointments?.some((apt) => {
     if (apt.status === 'cancelled' || apt.status === 'completed') return false
     return new Date(apt.start_time) > new Date()
   }) ?? false

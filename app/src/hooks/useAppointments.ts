@@ -7,7 +7,7 @@ import {
   type AppointmentFilters,
   type CreateAppointmentPayload,
 } from '@/repositories/appointments.repo'
-import type { Appointment } from '@/lib/database.types'
+import type { Appointment, AppointmentWithRelations } from '@/lib/database.types'
 
 export function useAppointments(filters?: AppointmentFilters) {
   return useQuery({
@@ -15,7 +15,7 @@ export function useAppointments(filters?: AppointmentFilters) {
     queryFn: async () => {
       const { data, error } = await listAppointments(filters)
       if (error) throw error
-      return data
+      return data as AppointmentWithRelations[]
     },
   })
 }
@@ -26,7 +26,7 @@ export function useAppointment(id: string | undefined) {
     queryFn: async () => {
       const { data, error } = await getAppointment(id!)
       if (error) throw error
-      return data
+      return data as AppointmentWithRelations
     },
     enabled: !!id,
   })

@@ -5,17 +5,20 @@ import {
   Outlet,
   redirect,
 } from '@tanstack/react-router'
+import { lazy, Suspense } from 'react'
 import { supabase } from './lib/supabase'
 import { getCurrentUser, getCurrentStaff } from './lib/auth'
 import { AppLayout } from './components/layout/AppLayout'
-import SetupPage from './routes/setup'
-import LoginPage from './routes/login'
-import SchedulePage from './routes/schedule'
-import PatientsPage from './routes/patients'
-import PatientDetailsPage from './routes/patient-details'
-import AvailabilityPage from './routes/availability'
-import SettingsPage from './routes/settings'
-import AccountPage from './routes/account'
+
+// Lazy-loaded route pages for code splitting
+const SetupPage = lazy(() => import('./routes/setup'))
+const LoginPage = lazy(() => import('./routes/login'))
+const SchedulePage = lazy(() => import('./routes/schedule'))
+const PatientsPage = lazy(() => import('./routes/patients'))
+const PatientDetailsPage = lazy(() => import('./routes/patient-details'))
+const AvailabilityPage = lazy(() => import('./routes/availability'))
+const SettingsPage = lazy(() => import('./routes/settings'))
+const AccountPage = lazy(() => import('./routes/account'))
 
 // Helper: check if system has been set up
 async function isBootstrapped(): Promise<boolean> {
@@ -26,7 +29,11 @@ async function isBootstrapped(): Promise<boolean> {
 
 // Root route — no auth check, just renders outlet
 const rootRoute = createRootRoute({
-  component: () => <Outlet />,
+  component: () => (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center"><span className="text-muted-foreground">Loading...</span></div>}>
+      <Outlet />
+    </Suspense>
+  ),
 })
 
 // Setup — only accessible when system is NOT bootstrapped

@@ -33,7 +33,7 @@ export function AppointmentHistory({ patientId }: AppointmentHistoryProps) {
           </p>
         ) : (
           <div className="space-y-3">
-            {appointments.map((apt: any) => {
+            {appointments.map((apt) => {
               const start = new Date(apt.start_time)
               const end = new Date(apt.end_time)
               return (

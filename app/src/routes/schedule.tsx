@@ -38,7 +38,7 @@ export default function SchedulePage() {
   const doctorIds = useMemo(() => {
     if (!allStaff) return []
     if (role === 'doctor') return staff?.id ? [staff.id] : []
-    return allStaff.map((d: any) => d.id)
+    return allStaff.map((d) => d.id)
   }, [allStaff, role, staff?.id])
 
   // Batch-fetch availability and time-off for all visible doctors
@@ -50,7 +50,7 @@ export default function SchedulePage() {
 
   // Group data into columns for TimeGridCalendar
   const { columns, unassigned } = useMemo(() => {
-    const unassignedAppts = appointments?.filter((a: any) => !a.doctor_id) ?? []
+    const unassignedAppts = appointments?.filter((a) => !a.doctor_id) ?? []
 
     if (!allStaff) return { columns: [] as DoctorColumnData[], unassigned: unassignedAppts }
 
@@ -59,11 +59,11 @@ export default function SchedulePage() {
     for (const doc of allStaff) {
       if (role === 'doctor' && doc.id !== staff?.id) continue
 
-      const docAppts = appointments?.filter((a: any) => a.doctor_id === doc.id) ?? []
+      const docAppts = appointments?.filter((a) => a.doctor_id === doc.id) ?? []
       const docAvail = (allAvailability ?? []).filter(
-        (a: any) => a.staff_id === doc.id && a.weekday === selectedWeekday,
+        (a) => a.staff_id === doc.id && a.weekday === selectedWeekday,
       )
-      const docTimeOff = (allTimeOff ?? []).filter((t: any) => t.staff_id === doc.id)
+      const docTimeOff = (allTimeOff ?? []).filter((t) => t.staff_id === doc.id)
 
       cols.push({
         id: doc.id,
@@ -77,11 +77,11 @@ export default function SchedulePage() {
     return { columns: cols, unassigned: unassignedAppts }
   }, [appointments, allStaff, allAvailability, allTimeOff, role, staff?.id, selectedWeekday])
 
-  const unassignedCount = appointments?.filter((a: any) => a.status === 'unassigned').length ?? 0
+  const unassignedCount = appointments?.filter((a) => a.status === 'unassigned').length ?? 0
 
   const selectedAppointment = useMemo(() => {
     if (!selectedAppointmentId || !appointments) return null
-    return appointments.find((a: any) => a.id === selectedAppointmentId) ?? null
+    return appointments.find((a) => a.id === selectedAppointmentId) ?? null
   }, [selectedAppointmentId, appointments])
 
   function shiftDate(days: number) {

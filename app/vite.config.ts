@@ -12,4 +12,25 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-router': ['@tanstack/react-router'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-radix': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-label',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-checkbox',
+          ],
+        },
+      },
+    },
+  },
 })

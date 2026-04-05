@@ -1,5 +1,6 @@
 // Database types — manually derived from docs/backend/schema.sql
-// Replace with `supabase gen types` output when available
+// To regenerate from live schema: npm run gen:types (requires `supabase login`)
+// Generated file: supabase.gen.ts — migrate manually to keep custom extensions below
 
 export type StaffRole = 'admin' | 'doctor' | 'clinic_manager'
 export type StaffStatus = 'pending' | 'active' | 'inactive'
@@ -78,4 +79,10 @@ export interface TimeOff {
   end_datetime: string
   type: TimeOffType
   created_at: string
+}
+
+/** Appointment with joined patient and doctor relations (from Supabase select) */
+export interface AppointmentWithRelations extends Appointment {
+  patient: { id: string; full_name: string; phone: string } | null
+  doctor: { id: string; full_name: string } | null
 }
