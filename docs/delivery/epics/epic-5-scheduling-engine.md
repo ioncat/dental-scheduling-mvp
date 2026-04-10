@@ -116,36 +116,50 @@ So that booking is fast, intuitive, and reduces errors.
 ### Acceptance Criteria
 Given I click "New Appointment"
 When the booking card opens
-Then I see a unified flow:
-1. Select doctor (if admin/clinic_manager)
-2. Select day via horizontal date pills (Mon–Sun)
-3. Select available time slot from chips (e.g. "09:00", "09:30", "10:00")
-4. Fill patient details (name, phone, purpose)
+Then I see a unified flow with two alternative paths:
+
+**Path A — Doctor first (default):**
+1. Select doctor
+2. See suggested slots (top 3 nearest)
+3. Select day via horizontal date pills (Mon–Sun)
+4. Select available time slot from chips
+5. [Next] → Select patient, add notes
+6. Confirm — appointment created
+
+**Path B — Patient first:**
+1. Select patient from searchable list
+2. Select doctor
+3. See suggested slots + calendar + time slots (same as Path A)
+4. [Next] → Add notes, review summary
 5. Confirm — appointment created
 
-Given I select a doctor and day
-When time slots load
-Then only available (non-conflicting) slots are shown as selectable chips
+Given I open the modal from the "New Appointment" button
+When the modal opens
+Then I see a toggle at the top: "Doctor first" / "Patient first"
 
-Given I select a time slot chip
-When I proceed to patient details
-Then the selected doctor, date, and time are displayed as a summary above the form
+Given I click on a free slot in the schedule time grid
+When the modal opens with pre-filled doctor and time
+Then the toggle is hidden and doctor-first flow is used automatically
 
 ### Edge Cases
-- No available slots for selected day — show message "No available slots" with suggestion to try next day
+- No available slots for selected day — show message "No available slots"
 - All doctors busy — show first available date per doctor
 - Patient already has appointment at selected time — warn about conflict
+- Switching flow resets the opposite selection (doctor ↔ patient)
 
 ### Out of Scope
 - Patient self-booking (this is staff-facing)
 - Multi-day recurring appointments
 - Drag-and-drop rescheduling
+- Multi-doctor slot comparison in patient-first flow (v2)
 
 ### Notes for Engineering
 - Time slot chips generated from doctor availability minus existing appointments
 - Slot duration based on appointment type or default (30 min)
-- Single card/modal with step indicators, not separate pages
-- Inspired by TimeTuna booking widget UX
+- Single card/modal with 2-step wizard, not separate pages
+- Flow toggle via `flowType` state: `'doctor-first' | 'patient-first'`
+- Shared `renderDoctorAndSchedule()` renders doctor selector + calendar + slots in both flows
+- See PDR-005 for design rationale
 
 ### Dependencies
 - Story 5.3 (basic create appointment)

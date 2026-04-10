@@ -16,17 +16,17 @@ Each item includes context on why it was deferred and when it may be revisited.
 - **Context:** Appointments are rescheduled via edit modal. Drag-and-drop would improve speed but adds significant UI complexity.
 - **Revisit:** Phase 2 (Usability & Workflow Refinement)
 
-### Configurable Appointment Flow Direction (Doctor-first vs Patient-first)
-- **Context:** Current wizard is doctor-centric (select doctor → time → patient). An alternative patient-centric flow (select patient → find nearest doctor with availability) may suit clinics where patients don't request a specific doctor. Both flows use the same data model; difference is UI step order only.
-- **Revisit:** After user testing of current flow + Story 12.4 (DB settings).
-- **Reference:** PDR-005
+### ~~Configurable Appointment Flow Direction~~ — Implemented (v1)
+- **Context:** Wizard now supports both doctor-first and patient-first flows via a toggle in the modal header. Auto-hidden when opened from schedule grid click.
+- **Remaining (v2):** Practice-level default setting (requires Story 12.4), multi-doctor slot comparison in patient-first flow.
+- **Reference:** PDR-005 (status: Implemented v1)
 
 ---
 
 ## Authentication & Access
 
 ### Google Auth Production Configuration
-- **Context:** Google OAuth button is implemented in the login page. However, it requires Google Cloud Console setup (OAuth credentials, redirect URIs) and may not work on localhost. A toggle flag (`google_auth_enabled` on practice table) is planned to let admins enable/disable it.
+- **Context:** Google OAuth button is present on the login page but **disabled** with a hint "Requires Google OAuth setup in Supabase". Requires Google Cloud Console setup (OAuth credentials, redirect URIs) + Supabase Dashboard provider configuration.
 - **Revisit:** When deploying to a production domain.
 - **Reference:** Story 1.3
 

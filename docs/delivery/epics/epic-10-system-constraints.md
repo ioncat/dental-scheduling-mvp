@@ -57,36 +57,31 @@ Then operation rejected
 
 ---
 
-## Technical Debt — Backlog
+## Technical Debt — Resolved (2026-04-05)
 
-Items identified during audit (2026-04-03). Not user stories, but engineering tasks required before production.
+Items identified during audit (2026-04-03). All resolved in commit `e5a2d43`.
 
-### TD-001: Remove `any` from Schedule Code
-- **What:** Critical schedule components use `any` for query results and filter callbacks
-- **Why:** With `strict: true` enabled, `any` bypasses type safety in the most important business flow
-- **Scope:** `schedule.tsx`, related hooks and repositories
-- **Priority:** P0
+### TD-001: Remove `any` from Schedule Code — Done
+- **What:** 10 `any` casts across `schedule.tsx`, `AppointmentHistory.tsx`, `ArchiveButton.tsx`
+- **Fix:** Created `AppointmentWithRelations` type in `database.types.ts`, typed `useAppointments` hook return, removed all `any` casts
+- **Result:** Zero `any` in `app/src/`
 
-### TD-002: Auto-generate TypeScript Types from Supabase Schema
-- **What:** `database.types.ts` is maintained manually. It can drift from the actual SQL schema.
-- **Why:** Manual sync breaks first when schema evolves (new fields, enums, policies)
-- **Fix:** `supabase gen types typescript` → CI check
-- **Priority:** P0
+### TD-002: Auto-generate TypeScript Types from Supabase Schema — Done
+- **What:** `database.types.ts` maintained manually
+- **Fix:** Added `npm run gen:types` script (`supabase gen types typescript --project-id ...`), added `npm run check:types` script
+- **Note:** Requires `supabase login` with access token to run. Manual types kept as source of truth with custom extensions (`AppointmentWithRelations`)
 
-### TD-003: Add Testing Infrastructure
-- **What:** No test framework, no test scripts in `package.json`, zero tests
-- **Why:** Quality checks are limited to `tsc` build. Behavioral regressions and domain logic errors are undetectable.
-- **Scope:** Vitest setup, smoke tests for key flows (auth, create appointment, reassign)
-- **Priority:** P1
+### TD-003: Add Testing Infrastructure — Done
+- **What:** No test framework, zero tests
+- **Fix:** Vitest + @testing-library/react + jsdom. 23 smoke tests for `timeGrid.ts` (13 tests) and `slotUtils.ts` (10 tests). Scripts: `npm test`, `npm run test:watch`
+- **Config:** `vitest.config.ts`, `src/test/setup.ts`
 
-### TD-004: Optimize Frontend Bundle
-- **What:** Production build chunk ~716 kB, Vite warns about size
-- **Why:** Slow first load on weak devices/networks
-- **Fix:** Lazy-load route pages, review large imports, code splitting
-- **Priority:** P1
+### TD-004: Optimize Frontend Bundle — Done
+- **What:** Single chunk 729 kB, Vite size warning
+- **Fix:** Lazy-loaded all 8 route pages via `React.lazy()` + `Suspense`. Manual vendor chunks: react (core), supabase, router, query, radix
+- **Result:** Main chunk 228 kB. No chunk exceeds 500 kB. Vite warning eliminated
 
-### TD-005: Error Boundary & Centralized Logging
-- **What:** Errors handled via local state/banner, no central error boundary, no external logging
-- **Why:** Incidents hard to diagnose in pilot, especially for intermittent failures
-- **Fix:** React Error Boundary + Sentry/equivalent
-- **Priority:** P2
+### TD-005: Error Boundary & Centralized Logging — Done
+- **What:** No error boundary, crashes show blank screen
+- **Fix:** `ErrorBoundary` component wrapping entire app in `main.tsx`. Shows "Something went wrong" + error message + Refresh button. Logs to `console.error` (Sentry integration deferred)
+- **File:** `app/src/components/shared/ErrorBoundary.tsx`

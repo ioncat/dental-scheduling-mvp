@@ -16,10 +16,12 @@
 | TopBar | Новый layout: клиника слева, дата/время справа | `TopBar.tsx` |
 | Login | Центрированная карточка с лого "D" | `login.tsx` |
 | Schedule | Выравнивание колонок (scrollbar fix) | `TimeGridCalendar.tsx`, `TimeGridHeader.tsx` |
-| Appointment | Полностью новый flow создания (2-step wizard) | `AppointmentModal.tsx` |
+| Appointment | Dual flow (doctor-first / patient-first), 2-step wizard | `AppointmentModal.tsx` |
 | Patients | Карточка с тенью | `PatientsTable.tsx` |
 | Settings | Вкладка System (тема + layout) | `settings.tsx`, `SystemSettings.tsx` |
 | Auth | DEV bypass для тестирования (УДАЛИТЬ перед мержем!) | `auth.ts`, `supabase.ts` |
+| Login | Google Sign-In disabled (awaiting OAuth setup) | `login.tsx` |
+| Tech Debt | TD-001–TD-005 resolved, ErrorBoundary, Vitest, bundle split | multiple |
 
 ---
 
@@ -113,9 +115,15 @@
 
 ## 5. Создание назначения — Smart Flow (Story 5.7, 5.8)
 
-### 5.1 Шаг 1: Выбор врача + времени
+### 5.1 Переключатель потока (Doctor-first / Patient-first)
 - [ ] На странице Schedule нажать **"+ New Appointment"**
 - [ ] Модалка открывается с заголовком "New Appointment"
+- [ ] Вверху два переключателя-пилла: **"Doctor first"** (активен по умолчанию) и **"Patient first"**
+- [ ] Нажать "Patient first" → видно поле "Patient" с кнопкой "Select patient..."
+- [ ] Нажать "Doctor first" → возвращается поле "Doctor" (выбор пациента сбрасывается)
+- [ ] Клик по **свободному слоту в расписании** → модалка открывается **без** переключателя (doctor pre-filled)
+
+### 5.1a Doctor-first flow (шаг 1)
 - [ ] **Doctor** — дропдаун с докторами из БД
 - [ ] Выбрать врача → появляются:
   - [ ] **Suggested Slots** (⚡) — до 3 ближайших свободных слотов (дата + время)
@@ -139,6 +147,19 @@
 - [ ] Кнопка **"Create Appointment"** disabled пока не выбран пациент
 - [ ] Выбрать пациента → нажать Create → назначение создано → модалка закрывается
 - [ ] Новое назначение видно в расписании на выбранную дату
+
+### 5.2a Patient-first flow
+- [ ] Нажать "Patient first" в переключателе
+- [ ] Нажать "Select patient..." → открывается модалка выбора пациента (поиск, таблица)
+- [ ] Выбрать пациента → кнопка показывает имя с инициалом-аватаром
+- [ ] Появляется селектор **Doctor** → выбрать врача
+- [ ] Появляются **Suggested Slots**, **Select Day**, **Available Times** — как в doctor-first
+- [ ] Кнопка **"Next — Confirm"** (не "Patient Details")
+- [ ] Выбрать слот → нажать Next → шаг 2: "Confirm Appointment"
+- [ ] Summary показывает дату, время, **Patient: [имя]**
+- [ ] **Нет** поля выбора пациента (уже выбран на шаге 1)
+- [ ] Есть поле Notes + кнопка Create Appointment
+- [ ] Создать → назначение появляется в расписании
 
 ### 5.3 Просмотр назначения (View Mode)
 - [ ] Клик по существующему назначению в расписании → модалка "Appointment Details"
@@ -210,15 +231,34 @@
 
 ---
 
-## 10. Перед мержем в main — КРИТИЧЕСКИ ВАЖНО
+## 10. Login — Google Sign-In
 
-### 10.1 Удалить DEV bypass
+- [ ] Google Sign-In кнопка **disabled** (серая, `opacity-50`, cursor not-allowed)
+- [ ] Под кнопкой текст: "Requires Google OAuth setup in Supabase"
+- [ ] Magic Link flow работает: ввести email → Send → получить ссылку
+- [ ] Клик по Google кнопке → **ничего не происходит** (не вызывает ошибку)
+
+---
+
+## 11. Tech Debt — Автоматизированные проверки
+
+- [ ] `npm run check:types` → **Zero errors** (tsc --noEmit)
+- [ ] `npm test` → **23/23 tests pass** (Vitest)
+- [ ] `npm run build` → **No chunks > 500 kB** (Vite no warnings)
+- [ ] Grep `any` в `app/src/` → **Zero matches**
+- [ ] ErrorBoundary: в DevTools console написать `document.querySelector('#root').__reactFiber$` и вызвать ошибку → должен показаться экран "Something went wrong" с кнопкой Refresh
+
+---
+
+## 12. Перед мержем в main — КРИТИЧЕСКИ ВАЖНО
+
+### 12.1 Удалить DEV bypass
 - [ ] `app/src/lib/auth.ts` — удалить `DEV_BYPASS_AUTH` и все `if (DEV_BYPASS_AUTH)` блоки
 - [ ] `app/src/lib/supabase.ts` — удалить `DEV_BYPASS_AUTH`, вернуть `VITE_SUPABASE_ANON_KEY`
 - [ ] `app/.env` — убрать `VITE_DEV_BYPASS_AUTH=true` и `VITE_SUPABASE_SERVICE_ROLE_KEY`
 - [ ] После удаления: проверить Login → Magic Link flow работает
 
-### 10.2 Финальная проверка
+### 12.2 Финальная проверка
 - [ ] `npm run build` — нет ошибок компиляции
 - [ ] `npm run lint` — нет новых предупреждений
 - [ ] Приложение запускается и работает без DEV bypass

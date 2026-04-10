@@ -1,6 +1,6 @@
 # Documentation Guide
 
-> 36 documents, 11 epics, 28 user stories.
+> 44 documents, 12 epics, 28+ user stories.
 > This guide helps you navigate without getting lost.
 
 ## Reading Paths
@@ -40,7 +40,8 @@
 | 7 | [PDR-002](decisions/pdr-002-manual-appointment-completion.md) | Manual appointment completion | Reflect real clinic workflows |
 | 8 | [PDR-003](decisions/pdr-003-no-external-calendar-integration.md) | No Google Calendar sync | Validate standalone value |
 | 9 | [PDR-004](decisions/pdr-004-one-clinic-per-user.md) | One clinic per user | Simplify auth and data model |
-| 10 | [Deferred Decisions](decisions/deferred-decisions.md) | Weekly view, drag-n-drop, dark mode | Conscious post-MVP deferral |
+| 10 | [PDR-005](decisions/pdr-005-appointment-flow-direction.md) | Dual appointment flow (v1 implemented) | Doctor-first / Patient-first toggle |
+| 11 | [Deferred Decisions](decisions/deferred-decisions.md) | Weekly view, drag-n-drop, dark mode | Conscious post-MVP deferral |
 
 ## Architecture — how it's structured
 
@@ -90,10 +91,20 @@
 | 27 | [Epic 2 — Practice](delivery/epics/epic-2-practice-management.md) | 2.1–2.2 | Clinic settings, branding in header |
 | 28 | [Epic 3 — Staff](delivery/epics/epic-3-staff-management.md) | 3.1–3.6 | Invite, onboard, deactivate, reactivate |
 | 29 | [Epic 4 — Patients](delivery/epics/epic-4-patient-lifecycle.md) | 4.1–4.4 | CRUD, archive/restore |
-| 30 | [Epic 5 — Scheduling](delivery/epics/epic-5-scheduling-engine.md) | 5.1–5.6 | Daily view, create/edit/cancel/complete |
+| 30 | [Epic 5 — Scheduling](delivery/epics/epic-5-scheduling-engine.md) | 5.1–5.8 | Daily view, create/edit/cancel/complete, dual flow, suggested slots |
 | 31 | [Epic 6 — Availability](delivery/epics/epic-6-availability-and-time-off.md) | 6.1–6.5 | Weekly slots, time-off (vacation/sick) |
 | 32 | [Epic 7 — Reassignment](delivery/epics/epic-7-operational-reassignment.md) | 7.1–7.3 | Auto-unassign, alert banner |
 | 33 | [Epic 8 — Access Control](delivery/epics/epic-8-access-control.md) | 8.1–8.2 | RLS-based RBAC |
 | 34 | [Epic 9 — Notifications](delivery/epics/epic-9-notifications.md) | 9.1–9.2 | *Deferred to post-MVP* |
-| 35 | [Epic 10 — Constraints](delivery/epics/epic-10-system-constraints.md) | 10.1–10.5 | UTC, overlap, availability, triggers |
+| 35 | [Epic 10 — Constraints](delivery/epics/epic-10-system-constraints.md) | 10.1–10.4 + TD | UTC, overlap, availability, tech debt (resolved) |
 | 36 | [Epic 11 — Audit Log](delivery/epics/epic-11-audit-log.md) | 11.1–11.2 | *Backlog* |
+| 37 | [Epic 12 — Theming & UI](delivery/epics/epic-12-theming-and-ui.md) | 12.1–12.5 | Themes, layout modes, glassmorphism, working hours |
+
+### Testing & Audit
+
+| # | Document | Purpose | You'll learn |
+|---|----------|---------|-------------|
+| 38 | [Testing Plan](delivery/TESTING-PLAN-redesign-branch.md) | Manual testing checklist | 12 sections, pre-merge tasks |
+| 39 | [Effort Estimate (RU)](audit/EFFORT-ESTIMATE-RU.md) | Traditional team vs AI-assisted | Cost, time, team size comparison |
+| 40 | [Audit Results (RU)](audit/AUDIT-RESULTS-RU.md) | Full audit findings | Code quality, architecture review |
+| 41 | [Short Report (RU)](audit/SHORT-REPORT-RU.md) | Executive summary of audit | Key metrics, recommendations |
