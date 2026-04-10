@@ -282,12 +282,51 @@ npm run dev
 
 ---
 
+## 📝 Session Memory (Local)
+
+**Location:** `docs/sessions/`
+
+**Purpose:** Persistent session logs stored in the project repo (version-controlled, survives reinstalls, available on any machine).
+
+### On Session Start (MANDATORY)
+1. Read `docs/sessions/` — check the latest session log for context
+2. Understand what was done last, what's pending, what decisions were made
+3. Continue from where the previous session left off
+
+### On Session End
+1. Create a new file: `docs/sessions/YYYY-MM-DD-short-description.md`
+2. Include:
+   - **What was done** (brief, 3–5 bullets)
+   - **Key decisions** made during the session
+   - **What's next** (pending tasks, open questions)
+   - **Commits** made (hashes + messages)
+3. Commit the session log to main
+
+### Format
+```markdown
+# Session: YYYY-MM-DD — Short Title
+
+## Done
+- ...
+
+## Decisions
+- ...
+
+## Next
+- ...
+
+## Commits
+- `abc1234` commit message
+```
+
+---
+
 ## 📞 Questions?
 
 1. **Product questions?** → Review docs/0–3 (vision, scope, roadmap)
 2. **Architecture questions?** → See docs/system/ and docs/backend/
 3. **Feature definition?** → Check docs/delivery/backlog/
-4. **Current memory issues?** → See MEMORY.md
+4. **Session context?** → Read `docs/sessions/` (latest file)
 
 **Also check:** [Documentation Guide](docs/GUIDE.md) for full navigation across 36 files.
 
