@@ -15,10 +15,10 @@
 
 | Phase | What happens | Key documents |
 |-------|-------------|---------------|
-| 1. Bootstrap | Empty DB → /setup → practice + admin created | [Epic 1 — Auth](delivery/epics/epic-1-authentication-and-account.md) (stories 1.0–1.2) |
-| 2. Configuration | Invite staff, set availability, add patients | [Epic 3 — Staff](delivery/epics/epic-3-staff-management.md), [Epic 6 — Availability](delivery/epics/epic-6-availability-and-time-off.md), [Epic 4 — Patients](delivery/epics/epic-4-patient-lifecycle.md) |
+| 1. Bootstrap | Empty DB → /setup → practice + admin created | [Epic 1 — Auth](delivery/backlog/epic-1-authentication-and-account.md) (stories 1.0–1.2) |
+| 2. Configuration | Invite staff, set availability, add patients | [Epic 3 — Staff](delivery/backlog/epic-3-staff-management.md), [Epic 6 — Availability](delivery/backlog/epic-6-availability-and-time-off.md), [Epic 4 — Patients](delivery/backlog/epic-4-patient-lifecycle.md) |
 | 3. Daily Operations | Schedule, complete, cancel appointments | [Appointment Lifecycle](contracts/appointment-lifecycle.md), [Domain ↔ UI](contracts/domain-ui.md) |
-| 4. Exception Handling | Deactivation → auto-unassign → reassign | [Epic 7 — Reassignment](delivery/epics/epic-7-operational-reassignment.md), [Appointment Lifecycle](contracts/appointment-lifecycle.md) |
+| 4. Exception Handling | Deactivation → auto-unassign → reassign | [Epic 7 — Reassignment](delivery/backlog/epic-7-operational-reassignment.md), [Appointment Lifecycle](contracts/appointment-lifecycle.md) |
 
 ---
 
@@ -87,18 +87,18 @@
 
 | # | Epic | Stories | Key capability |
 |---|------|---------|---------------|
-| 26 | [Epic 1 — Auth & Account](delivery/epics/epic-1-authentication-and-account.md) | 1.0–1.5 | Setup, magic link, Google OAuth, account |
-| 27 | [Epic 2 — Practice](delivery/epics/epic-2-practice-management.md) | 2.1–2.2 | Clinic settings, branding in header |
-| 28 | [Epic 3 — Staff](delivery/epics/epic-3-staff-management.md) | 3.1–3.6 | Invite, onboard, deactivate, reactivate |
-| 29 | [Epic 4 — Patients](delivery/epics/epic-4-patient-lifecycle.md) | 4.1–4.4 | CRUD, archive/restore |
-| 30 | [Epic 5 — Scheduling](delivery/epics/epic-5-scheduling-engine.md) | 5.1–5.8 | Daily view, create/edit/cancel/complete, dual flow, suggested slots |
-| 31 | [Epic 6 — Availability](delivery/epics/epic-6-availability-and-time-off.md) | 6.1–6.5 | Weekly slots, time-off (vacation/sick) |
-| 32 | [Epic 7 — Reassignment](delivery/epics/epic-7-operational-reassignment.md) | 7.1–7.3 | Auto-unassign, alert banner |
-| 33 | [Epic 8 — Access Control](delivery/epics/epic-8-access-control.md) | 8.1–8.2 | RLS-based RBAC |
-| 34 | [Epic 9 — Notifications](delivery/epics/epic-9-notifications.md) | 9.1–9.2 | *Deferred to post-MVP* |
-| 35 | [Epic 10 — Constraints](delivery/epics/epic-10-system-constraints.md) | 10.1–10.4 + TD | UTC, overlap, availability, tech debt (resolved) |
-| 36 | [Epic 11 — Audit Log](delivery/epics/epic-11-audit-log.md) | 11.1–11.2 | *Backlog* |
-| 37 | [Epic 12 — Theming & UI](delivery/epics/epic-12-theming-and-ui.md) | 12.1–12.5 | Themes, layout modes, glassmorphism, working hours |
+| 26 | [Epic 1 — Auth & Account](delivery/backlog/epic-1-authentication-and-account.md) | 1.0–1.5 | Setup, magic link, Google OAuth, account |
+| 27 | [Epic 2 — Practice](delivery/backlog/epic-2-practice-management.md) | 2.1–2.2 | Clinic settings, branding in header |
+| 28 | [Epic 3 — Staff](delivery/backlog/epic-3-staff-management.md) | 3.1–3.6 | Invite, onboard, deactivate, reactivate |
+| 29 | [Epic 4 — Patients](delivery/backlog/epic-4-patient-lifecycle.md) | 4.1–4.4 | CRUD, archive/restore |
+| 30 | [Epic 5 — Scheduling](delivery/backlog/epic-5-scheduling-engine.md) | 5.1–5.8 | Daily view, create/edit/cancel/complete, dual flow, suggested slots |
+| 31 | [Epic 6 — Availability](delivery/backlog/epic-6-availability-and-time-off.md) | 6.1–6.5 | Weekly slots, time-off (vacation/sick) |
+| 32 | [Epic 7 — Reassignment](delivery/backlog/epic-7-operational-reassignment.md) | 7.1–7.3 | Auto-unassign, alert banner |
+| 33 | [Epic 8 — Access Control](delivery/backlog/epic-8-access-control.md) | 8.1–8.2 | RLS-based RBAC |
+| 34 | [Epic 9 — Notifications](delivery/backlog/epic-9-notifications.md) | 9.1–9.2 | *Deferred to post-MVP* |
+| 35 | [Epic 10 — Constraints](delivery/backlog/epic-10-system-constraints.md) | 10.1–10.4 + TD | UTC, overlap, availability, tech debt (resolved) |
+| 36 | [Epic 11 — Audit Log](delivery/backlog/epic-11-audit-log.md) | 11.1–11.2 | *Backlog* |
+| 37 | [Epic 12 — Theming & UI](delivery/backlog/epic-12-theming-and-ui.md) | 12.1–12.5 | Themes, layout modes, glassmorphism, working hours |
 
 ### Testing & Audit
 

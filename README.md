@@ -77,7 +77,7 @@ Determine whether doctors are willing to replace Google Calendar with a dedicate
 | Goal | Start here | Then |
 |------|-----------|------|
 | **Review architecture** | [System Context](docs/system/system-context.md) | [Container Diagram](docs/system/container-diagram.md) → [Schema](docs/backend/schema.logical.md) |
-| **See delivery process** | [Dev Plan](docs/delivery/dev-plan-en.md) | [Epics](docs/delivery/epics/) (11 epics, 28 user stories) |
+| **See delivery process** | [Dev Plan](docs/delivery/dev-plan-en.md) | [Backlog](docs/delivery/backlog/) (12 epics, 28+ user stories) |
 | **Run the application** | [Quick Start](app/QUICK-START.md) | `npm install` → `npm run dev` → demo data included |
 
 Full navigation across all 36 documents: **[Documentation Guide](docs/GUIDE.md)**

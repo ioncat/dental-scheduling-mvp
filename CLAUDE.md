@@ -95,7 +95,7 @@ dental-scheduling-mvp/
 │   │   ├── domain-ui.md          # Roles, pages, business rules
 │   │   └── appointment-lifecycle.md  # Status flow, triggers
 │   ├── decisions/                # Product decisions (PDR-001–PDR-005)
-│   ├── delivery/                 # Epics & stories (11 epics, 28 stories)
+│   ├── delivery/                 # Backlog & stories (12 epics, 28+ stories)
 │   ├── system/                   # Architecture & context diagrams
 │   ├── backend/                  # Database schema, logical design
 │   └── ui/                       # UI component specs, pages
@@ -286,7 +286,7 @@ npm run dev
 
 1. **Product questions?** → Review docs/0–3 (vision, scope, roadmap)
 2. **Architecture questions?** → See docs/system/ and docs/backend/
-3. **Feature definition?** → Check docs/delivery/epics/
+3. **Feature definition?** → Check docs/delivery/backlog/
 4. **Current memory issues?** → See MEMORY.md
 
 **Also check:** [Documentation Guide](docs/GUIDE.md) for full navigation across 36 files.
