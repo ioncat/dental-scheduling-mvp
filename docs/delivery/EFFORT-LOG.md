@@ -40,8 +40,9 @@
 | 3–4 апр | 00:39 / 16:25–20:28 | UI redesign: theming, sidebar, layout, 5 тем, appointment flow, slot tooltips | ~6 ч |
 | 5 апр | 09:22–09:34 | Tech debt (TD-001–TD-005), dual appointment flow (doctor-first / patient-first) | ~2 ч |
 | 10 апр | 17:55–19:40 | CLAUDE.md, testing strategy, 64 unit теста, мерж веток | ~3 ч |
+| 11 апр | ~16:45–17:30 | Seed fix (admin, load profiles, enum type), dev bypass sign-out, dialog overlay, QUICK-START docs, README screenshot | ~0.75 ч |
 
-**Активных дней: 3** (из 7 календарных, 3–10 апреля)
+**Активных дней: 4** (из 8 календарных, 3–11 апреля)
 
 ### Разбивка по категориям
 
@@ -52,7 +53,8 @@
 | Tech debt resolution | ~1 ч |
 | Документация (CLAUDE.md, testing strategy) | ~1.5 ч |
 | Тестирование (64 unit теста, Vitest) | ~1.5 ч |
-| **Итого Phase 2** | **~11 ч** |
+| Seed fix + dev bypass + docs | ~0.75 ч |
+| **Итого Phase 2** | **~11.75 ч** |
 
 ---
 
@@ -61,8 +63,8 @@
 | Phase | Период | Активных дней | Часов |
 |-------|--------|---------------|-------|
 | Phase 1 — MVP | 11–27 фев 2026 | 6 | ~19–22 ч |
-| Phase 2 — Redesign + Testing | 3–10 апр 2026 | 3 | ~11 ч |
-| **Всего** | **фев–апр 2026** | **9** | **~30–33 ч** |
+| Phase 2 — Redesign + Testing | 3–11 апр 2026 | 4 | ~11.75 ч |
+| **Всего** | **фев–апр 2026** | **10** | **~31–34 ч** |
 
 **Эквивалент: ~4 полных рабочих дня** (по 8 часов).
 
@@ -81,4 +83,4 @@
 
 ---
 
-**Последнее обновление:** 2026-04-10
+**Последнее обновление:** 2026-04-11
