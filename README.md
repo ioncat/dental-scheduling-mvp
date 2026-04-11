@@ -28,6 +28,8 @@ As a result, clinics may experience scheduling chaos and rely on manual coordina
 
 This project explores whether dentists would adopt a purpose-built scheduling system if it provided clarity, control, and operational simplicity.
 
+<img src="docs/screenshots/dental-schedule.png" width="800" alt="Schedule view with appointment creation">
+
 The product was designed first at product level (vision, scope, roadmap, decisions)
 and only then translated into system architecture and implementation.
 

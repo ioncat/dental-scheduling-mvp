@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useMatchRoute, useRouter } from '@tanstack/react-router'
 import { Calendar, Users, Clock, Settings, User, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -5,6 +6,8 @@ import { signOut } from '@/lib/auth'
 import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import type { StaffRole } from '@/hooks/useCurrentStaff'
+
+const DEV_BYPASS_AUTH = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true'
 
 interface SidebarNavProps {
   role: StaffRole | null
@@ -27,7 +30,13 @@ export function SidebarNav({ role, staffName }: SidebarNavProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
 
+  const [bypassNotice, setBypassNotice] = useState(false)
+
   async function handleLogout() {
+    if (DEV_BYPASS_AUTH) {
+      setBypassNotice(true)
+      return
+    }
     await signOut()
     queryClient.clear()
     router.navigate({ to: '/login' })
@@ -77,6 +86,11 @@ export function SidebarNav({ role, staffName }: SidebarNavProps) {
             .filter((item) => !item.roles || (role && item.roles.includes(role)))
             .map((item) => renderLink(item))}
         </nav>
+        {bypassNotice && (
+          <p className="mt-2 rounded-md bg-yellow-900/40 px-3 py-1.5 text-xs text-yellow-200">
+            Sign out is disabled in dev bypass mode.
+          </p>
+        )}
         <div className="mt-3 flex items-center justify-between rounded-lg px-3 py-2"
           style={{ background: 'hsl(201 50% 15%)' }}>
           <span className="truncate text-sm font-medium"

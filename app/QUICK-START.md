@@ -65,7 +65,7 @@ If you checked the demo data option, you get:
 
 | Data | Count | Details |
 |------|-------|---------|
-| Staff | 7 | 6 doctors + 1 clinic manager |
+| Staff | 8 | 6 doctors + 1 clinic manager + 1 admin |
 | Patients | 25 | International names, varied contacts |
 | Appointments | ~350 | Spread across 3 weeks with realistic load profiles |
 | Availability | Mon-Sat | Mon-Fri 10:00-19:00, Sat 10:00-15:00 (doctors 1-3) |
@@ -76,9 +76,9 @@ All dates are relative to the current week:
 
 | Week | Load | Statuses |
 |------|------|----------|
-| Previous | 55-65% per doctor | completed, ~5% cancelled |
-| Current | 55% | past = completed, future = scheduled |
-| Next | 25% | all scheduled |
+| Previous | 75-85% per doctor | completed, ~5% cancelled |
+| Current | 70-80% | past = completed, future = scheduled |
+| Next | 50-60% | all scheduled |
 
 ### Adding Demo Data to an Existing Database
 
@@ -87,6 +87,29 @@ If you already completed setup without demo data, run in SQL Editor:
 ```sql
 select seed_demo_data((select id from practice limit 1));
 ```
+
+---
+
+## Development Auth Bypass
+
+For local UI development without configuring Supabase Auth (magic links, email verification), you can enable a bypass mode that skips authentication entirely.
+
+Add to your `.env`:
+
+```env
+VITE_DEV_BYPASS_AUTH=true
+VITE_SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+```
+
+The service role key is in **Supabase Dashboard > Settings > API > Project API keys > service_role**.
+
+**What bypass mode does:**
+- Skips Supabase Auth — no login required
+- Uses the service role key to bypass RLS (full data access)
+- Logs in as the first `admin` staff member in the database
+- Disables sign out (shows a notice instead)
+
+**Important:** Never use bypass mode in production. Both env variables are excluded from the repo via `.gitignore`.
 
 ---
 

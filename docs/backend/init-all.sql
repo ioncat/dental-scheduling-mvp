@@ -440,7 +440,7 @@ declare
   v_di   int;
   v_h    int;
   v_pi   int := 0;
-  v_status text;
+  v_status appointment_status;
   v_target int;
   v_notes text[] := array[
     'Routine cleaning', 'Filling replacement', 'Root canal treatment',
@@ -490,6 +490,9 @@ begin
   values (p_practice_id, 'Iryna Bondarenko', 'iryna.bondarenko@example.com', '+380937890123', 'clinic_manager', 'active')
   returning id into v_mgr;
 
+  insert into staff (practice_id, full_name, email, phone_number, role, status)
+  values (p_practice_id, 'Taras Melnyk', 'taras.melnyk@example.com', '+380938901234', 'admin', 'active');
+
   -- Availability: all 6 doctors Mon-Fri 10:00-19:00; docs 1-3 also Sat 10:00-15:00
   for v_di in 1..6 loop
     for v_d in 1..5 loop
@@ -537,12 +540,12 @@ begin
   -- Monday of current week (ISO: Monday=1)
   v_mon := current_date - ((extract(isodow from current_date)::int - 1) || ' days')::interval;
 
-  -- === PREVIOUS WEEK: Mon-Fri, 55-65% load, completed ===
-  -- Docs 1-3: 5/9 slots (55%), Docs 4-6: 6/9 slots (67%), ~5% cancelled
+  -- === PREVIOUS WEEK: Mon-Fri, 75-85% load, completed ===
+  -- Docs 1-3: 7/9 slots (78%), Docs 4-6: 8/9 slots (89%), ~5% cancelled
   for v_d in -7..-3 loop
     v_day := v_mon + v_d;
     for v_di in 1..6 loop
-      v_target := case when v_di <= 3 then 5 else 6 end;
+      v_target := case when v_di <= 3 then 7 else 8 end;
       for v_h in 10..18 loop
         if ((v_di * 7 + (v_d + 20) * 3 + v_h * 13) % 9) < v_target then
           v_pi := v_pi + 1;
@@ -556,11 +559,11 @@ begin
     end loop;
   end loop;
 
-  -- Previous Saturday (docs 1-3, ~40%)
+  -- Previous Saturday (docs 1-3, ~70%)
   v_day := v_mon - 2;
   for v_di in 1..3 loop
     for v_h in 10..14 loop
-      if ((v_di * 7 + v_h * 13) % 5) < 2 then
+      if ((v_di * 7 + v_h * 13) % 5) < 4 then
         v_pi := v_pi + 1;
         insert into appointment (practice_id, patient_id, doctor_id, start_time, end_time, status, notes)
         values (p_practice_id, v_patients[(v_pi % 25) + 1], v_docs[v_di],
@@ -570,13 +573,13 @@ begin
     end loop;
   end loop;
 
-  -- === CURRENT WEEK: Mon-Fri, 55% load (5/9) ===
+  -- === CURRENT WEEK: Mon-Fri, 70-80% load (7/9) ===
   -- Past → completed, Future → scheduled
   for v_d in 0..4 loop
     v_day := v_mon + v_d;
     for v_di in 1..6 loop
       for v_h in 10..18 loop
-        if ((v_di * 11 + v_d * 7 + v_h * 3) % 9) < 5 then
+        if ((v_di * 11 + v_d * 7 + v_h * 3) % 9) < 7 then
           v_pi := v_pi + 1;
           if (v_day + make_time(v_h + 1, 0, 0)) < now() then
             v_status := 'completed';
@@ -592,11 +595,11 @@ begin
     end loop;
   end loop;
 
-  -- Current Saturday (docs 1-3)
+  -- Current Saturday (docs 1-3, ~70%)
   v_day := v_mon + 5;
   for v_di in 1..3 loop
     for v_h in 10..14 loop
-      if ((v_di * 11 + 5 * 7 + v_h * 3) % 5) < 2 then
+      if ((v_di * 11 + 5 * 7 + v_h * 3) % 5) < 4 then
         v_pi := v_pi + 1;
         if (v_day + make_time(v_h + 1, 0, 0)) < now() then
           v_status := 'completed';
@@ -611,14 +614,14 @@ begin
     end loop;
   end loop;
 
-  -- === NEXT WEEK: Mon-Fri, 25% load (2/9), all scheduled ===
+  -- === NEXT WEEK: Mon-Fri, 50-60% load (5/9), all scheduled ===
   -- Skip Doc6 on Wed(9), Thu(10), Fri(11) — time-off
   for v_d in 7..11 loop
     v_day := v_mon + v_d;
     for v_di in 1..6 loop
       if v_di = 6 and v_d >= 9 then continue; end if;
       for v_h in 10..18 loop
-        if ((v_di * 3 + (v_d + 20) * 11 + v_h * 7) % 9) < 2 then
+        if ((v_di * 3 + (v_d + 20) * 11 + v_h * 7) % 9) < 5 then
           v_pi := v_pi + 1;
           insert into appointment (practice_id, patient_id, doctor_id, start_time, end_time, status, notes)
           values (p_practice_id, v_patients[(v_pi % 25) + 1], v_docs[v_di],

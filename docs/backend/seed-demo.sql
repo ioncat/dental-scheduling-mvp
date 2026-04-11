@@ -1,13 +1,13 @@
 -- =============================================================
 -- DEMO DATA SEED — call after bootstrap_practice()
 -- =============================================================
--- Creates 6 doctors, 25 patients, ~350 appointments across 3 weeks,
+-- Creates 6 doctors, 1 clinic_manager, 1 admin, 25 patients, ~350 appointments across 3 weeks,
 -- availability, time-off. Designed to stress-test the calendar UI.
 --
 -- Load profile:
---   Previous week:  55-65% per doctor (completed)
---   Current  week:  55% (past=completed, future=scheduled)
---   Next     week:  25% (all scheduled)
+--   Previous week:  75-85% per doctor (completed)
+--   Current  week:  70-80% (past=completed, future=scheduled)
+--   Next     week:  50-60% (all scheduled)
 --   3 unassigned appointments for alert demo
 --   1 doctor with time-off next week (Wed-Fri)
 -- =============================================================
@@ -26,7 +26,7 @@ declare
   v_di   int;        -- doctor index (1..6)
   v_h    int;        -- appointment start hour (10..18)
   v_pi   int := 0;   -- patient cycling counter
-  v_status text;
+  v_status appointment_status;
   v_target int;
   v_notes text[] := array[
     'Routine cleaning', 'Filling replacement', 'Root canal treatment',
@@ -91,6 +91,9 @@ begin
   values (p_practice_id, 'Iryna Bondarenko', 'iryna.bondarenko@example.com', '+380937890123', 'clinic_manager', 'active')
   returning id into v_mgr;
 
+  insert into staff (practice_id, full_name, email, phone_number, role, status)
+  values (p_practice_id, 'Taras Melnyk', 'taras.melnyk@example.com', '+380938901234', 'admin', 'active');
+
   -- ========================================
   -- AVAILABILITY
   -- All 6 doctors: Mon-Fri 10:00-19:00
@@ -150,16 +153,16 @@ begin
   v_mon := current_date - ((extract(isodow from current_date)::int - 1) || ' days')::interval;
 
   -- ========================================
-  -- PREVIOUS WEEK: Mon-Fri, 55-65% load
-  -- Docs 1-3: target 5/9 slots (55%)
-  -- Docs 4-6: target 6/9 slots (67%)
+  -- PREVIOUS WEEK: Mon-Fri, 75-85% load
+  -- Docs 1-3: target 7/9 slots (78%)
+  -- Docs 4-6: target 8/9 slots (89%)
   -- All completed, ~5% cancelled
   -- ========================================
 
   for v_d in -7..-3 loop     -- Mon(-7) through Fri(-3) of last week
     v_day := v_mon + v_d;
     for v_di in 1..6 loop
-      v_target := case when v_di <= 3 then 5 else 6 end;
+      v_target := case when v_di <= 3 then 7 else 8 end;
       for v_h in 10..18 loop
         if ((v_di * 7 + (v_d + 20) * 3 + v_h * 13) % 9) < v_target then
           v_pi := v_pi + 1;
@@ -179,11 +182,11 @@ begin
     end loop;
   end loop;
 
-  -- Previous Saturday (docs 1-3 only, ~40% of 5 slots)
+  -- Previous Saturday (docs 1-3 only, ~70% of 5 slots)
   v_day := v_mon - 2;
   for v_di in 1..3 loop
     for v_h in 10..14 loop
-      if ((v_di * 7 + v_h * 13) % 5) < 2 then
+      if ((v_di * 7 + v_h * 13) % 5) < 4 then
         v_pi := v_pi + 1;
         insert into appointment (practice_id, patient_id, doctor_id, start_time, end_time, status, notes)
         values (
@@ -200,7 +203,7 @@ begin
   end loop;
 
   -- ========================================
-  -- CURRENT WEEK: Mon-Fri, 55% load (5/9 slots)
+  -- CURRENT WEEK: Mon-Fri, 70-80% load (7/9 slots)
   -- Past appointments → completed
   -- Future appointments → scheduled
   -- ========================================
@@ -209,7 +212,7 @@ begin
     v_day := v_mon + v_d;
     for v_di in 1..6 loop
       for v_h in 10..18 loop
-        if ((v_di * 11 + v_d * 7 + v_h * 3) % 9) < 5 then
+        if ((v_di * 11 + v_d * 7 + v_h * 3) % 9) < 7 then
           v_pi := v_pi + 1;
           if (v_day + make_time(v_h + 1, 0, 0)) < now() then
             v_status := 'completed';
@@ -231,11 +234,11 @@ begin
     end loop;
   end loop;
 
-  -- Current Saturday (docs 1-3)
+  -- Current Saturday (docs 1-3, ~70% of 5 slots)
   v_day := v_mon + 5;
   for v_di in 1..3 loop
     for v_h in 10..14 loop
-      if ((v_di * 11 + 5 * 7 + v_h * 3) % 5) < 2 then
+      if ((v_di * 11 + 5 * 7 + v_h * 3) % 5) < 4 then
         v_pi := v_pi + 1;
         if (v_day + make_time(v_h + 1, 0, 0)) < now() then
           v_status := 'completed';
@@ -257,7 +260,7 @@ begin
   end loop;
 
   -- ========================================
-  -- NEXT WEEK: Mon-Fri, 25% load (2/9 slots)
+  -- NEXT WEEK: Mon-Fri, 50-60% load (5/9 slots)
   -- All scheduled. Skip Doc6 Wed-Fri (time-off).
   -- ========================================
 
@@ -269,7 +272,7 @@ begin
         continue;
       end if;
       for v_h in 10..18 loop
-        if ((v_di * 3 + (v_d + 20) * 11 + v_h * 7) % 9) < 2 then
+        if ((v_di * 3 + (v_d + 20) * 11 + v_h * 7) % 9) < 5 then
           v_pi := v_pi + 1;
           insert into appointment (practice_id, patient_id, doctor_id, start_time, end_time, status, notes)
           values (

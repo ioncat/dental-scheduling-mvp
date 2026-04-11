@@ -455,26 +455,34 @@ npx @axe-core/cli http://localhost:5173/schedule
 
 One seed dataset serves both demonstration and testing purposes.
 
-**Current seed:** 6 doctors, 25 patients, ~350 appointments (static dates).
+**Current seed:** `docs/backend/seed-demo.sql` — 6 doctors, 25 patients, ~350 appointments.
 
-**Update plan:** Modify seed to use relative dates (today, tomorrow, next week) so data is always fresh.
+**Dates are already relative:** The seed function calculates `v_mon` (Monday of current week) at runtime and distributes appointments across previous/current/next week. Re-running the function produces fresh dates automatically.
 
-| Data category | Current | Target |
-|---------------|---------|--------|
-| Appointments | Fixed dates (Feb-Mar 2026) | Relative: today ±7 days |
-| Time-off | Fixed dates | Relative: one doctor on leave tomorrow |
-| Availability | Static | Keep as-is (weekday-based, always valid) |
-| Patients | 25, none archived | 25 active + 2 archived (for testing restore) |
-| Staff | 6 doctors, all active | 6 doctors (5 active + 1 inactive for testing) |
+| Data category | How it works |
+|---------------|-------------|
+| Appointments | Relative to current week (prev=completed, current=mixed, next=scheduled) |
+| Time-off | Relative: one doctor has time-off next week (Wed-Fri) |
+| Availability | Weekday-based (Mon-Fri 10:00-19:00), always valid |
+| Patients | 25 active patients |
+| Staff | 6 doctors + 1 clinic manager, all active |
+| Unassigned | 3 unassigned appointments for alert banner demo |
 
-### Seed Update Script
+### How to Refresh Demo Data
 
 ```sql
--- Example: shift all appointments to be relative to today
-UPDATE appointments
-SET scheduled_at = scheduled_at + (CURRENT_DATE - '2026-03-15'::date) * INTERVAL '1 day',
-    end_time = end_time + (CURRENT_DATE - '2026-03-15'::date) * INTERVAL '1 day'
-WHERE status = 'scheduled';
+-- 1. Find your practice ID
+SELECT id FROM practice LIMIT 1;
+
+-- 2. Clear old data
+DELETE FROM appointment;
+DELETE FROM time_off;
+DELETE FROM availability;
+DELETE FROM patient;
+DELETE FROM staff WHERE role != 'admin';
+
+-- 3. Re-run seed with fresh dates
+SELECT seed_demo_data('YOUR_PRACTICE_ID');
 ```
 
 ---
