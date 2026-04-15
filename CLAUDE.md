@@ -160,7 +160,7 @@ dental-scheduling-mvp/
 ## 🌍 Global Context & Interaction Rules
 
 ### Global Instructions
-All projects follow rules defined in: **`E:\My files\0 My_Dev\ClaudeCode\my_claude\`**
+All projects follow rules defined in: **`E:\My files\0 My_Dev\external_repo\ClaudeCode\my_claude\`**
 
 #### INTERACTION_RULES.md
 1. **Wait for Answers** — If a question is pending (yours or user's), wait for response before taking action
@@ -179,9 +179,9 @@ All projects follow rules defined in: **`E:\My files\0 My_Dev\ClaudeCode\my_clau
 
 ## 💾 Project Memory System
 
-**Location:** `C:\Users\user\.claude\projects\E--My-files-0-My-Dev-dental-scheduling-mvp\memory\`
+**Location:** `.claude/memory/` — inside the project folder, gitignored, survives reinstalls when copied/backed up with the project.
 
-**Memory Index:** See `MEMORY.md` in project root (synced with auto-memory)
+**Rule:** Every time a memory is saved, write it to `.claude/memory/`. This folder travels with the project — back it up, sync via cloud, or commit to a private repo. It won't be pushed to a public repo (`.claude/` is gitignored).
 
 **Current Memories:**
 - `project_scrollbar_alignment.md` — TimeGridCalendar header/body alignment fix
@@ -282,25 +282,24 @@ npm run dev
 
 ---
 
-## 📝 Session Memory (Local)
+## 📝 Session Memory (MANDATORY)
 
-**Location:** `docs/sessions/`
+**Location:** `.claude/sessions/` — inside the project folder, gitignored, travels with the project.
 
-**Purpose:** Persistent session logs stored in the project repo (version-controlled, survives reinstalls, available on any machine).
-
-### On Session Start (MANDATORY)
-1. Read `docs/sessions/` — check the latest session log for context
+### On Session Start
+1. Read `.claude/sessions/` — check the latest session log for context
 2. Understand what was done last, what's pending, what decisions were made
 3. Continue from where the previous session left off
 
+⚠️ **If `.claude/sessions/` does not exist:** notify the user and create it upon confirmation.
+
 ### On Session End
-1. Create a new file: `docs/sessions/YYYY-MM-DD-short-description.md`
+1. Create: `.claude/sessions/YYYY-MM-DD-short-description.md`
 2. Include:
-   - **What was done** (brief, 3–5 bullets)
-   - **Key decisions** made during the session
-   - **What's next** (pending tasks, open questions)
-   - **Commits** made (hashes + messages)
-3. Commit the session log to main
+   - **Done** (3–5 bullets)
+   - **Decisions** made during the session
+   - **Next** (pending tasks, open questions)
+   - **Commits** (hashes + messages)
 
 ### Format
 ```markdown
