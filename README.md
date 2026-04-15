@@ -9,6 +9,8 @@ The product is designed to replace Google Calendar as the primary scheduling too
 
 This is not a theoretical exercise — the MVP has been fully implemented and is ready for user testing.
 
+**As a portfolio project, this MVP demonstrates the foundation for evolving into a SaaS service.**
+
 ---
 
 ## What This Project Is
