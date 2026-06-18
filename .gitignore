@@ -40,6 +40,4 @@ Thumbs.db
 .supabase/
 
 # Local-only docs (not for repo)
-docs/GUIDE-RU.md
-docs/DOC-REGISTRY.md
-docs/sessions/
+docs/archive/

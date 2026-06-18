@@ -69,19 +69,19 @@ Determine whether doctors are willing to replace Google Calendar with a dedicate
 
 **Understand the product**
 
-1. [Executive Summary](docs/0%20executive-summary.md) — hypothesis, MVP goal, success criteria
-2. [Product Vision](docs/1%20product-vision.md) — target audience, pain points, core principles
-3. [MVP Scope](docs/2%20mvp-scope.md) — what's in, what's out, user flows
-4. [Domain ↔ UI Contract](docs/contracts/domain-ui.md) — roles, pages, routes, 15 business rules
-5. [Appointment Lifecycle](docs/contracts/appointment-lifecycle.md) — status flow, triggers, permissions
+1. [Executive Summary](docs/discovery/executive-summary.md) — hypothesis, MVP goal, success criteria
+2. [Product Vision](docs/discovery/product-vision.md) — target audience, pain points, core principles
+3. [MVP Scope](docs/discovery/mvp-scope.md) — what's in, what's out, user flows
+4. [Domain ↔ UI Contract](docs/architecture/contracts/domain-ui.md) — roles, pages, routes, 15 business rules
+5. [Appointment Lifecycle](docs/architecture/contracts/appointment-lifecycle.md) — status flow, triggers, permissions
 6. [Product Decisions](docs/decisions/) — 4 conscious "no"s (PDR-001 → PDR-004)
 
 **Architecture, Delivery & Code**
 
 | Goal | Start here | Then |
 |------|-----------|------|
-| **Review architecture** | [System Context](docs/system/system-context.md) | [Container Diagram](docs/system/container-diagram.md) → [Schema](docs/backend/schema.logical.md) |
-| **See delivery process** | [Dev Plan](docs/delivery/dev-plan-en.md) | [Backlog](docs/delivery/backlog/) (12 epics, 28+ user stories) |
+| **Review architecture** | [System Context](docs/architecture/system/system-context.md) | [Container Diagram](docs/architecture/system/container-diagram.md) → [Schema](docs/architecture/backend/schema.logical.md) |
+| **See delivery process** | [Dev Plan](docs/delivery/dev-plan.md) | [Backlog](docs/delivery/backlog/) (12 epics, 28+ user stories) |
 | **Run the application** | [Quick Start](app/QUICK-START.md) | `npm install` → `npm run dev` → demo data included |
 
 Full navigation across all 36 documents: **[Documentation Guide](docs/GUIDE.md)**

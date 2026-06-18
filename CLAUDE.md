@@ -86,19 +86,22 @@
 
 ```
 dental-scheduling-mvp/
-├── docs/                          # Product documentation (36 files)
-│   ├── 0 executive-summary.md    # MVP hypothesis & outcome
-│   ├── 1 product-vision.md       # Problem statement, principles
-│   ├── 2 mvp-scope.md            # In/out of scope, user flows
-│   ├── 3 roadmap.md              # Phases 1–6, pilot validation
-│   ├── contracts/                # Domain contracts
-│   │   ├── domain-ui.md          # Roles, pages, business rules
-│   │   └── appointment-lifecycle.md  # Status flow, triggers
-│   ├── decisions/                # Product decisions (PDR-001–PDR-005)
-│   ├── delivery/                 # Backlog & stories (12 epics, 28+ stories)
-│   ├── system/                   # Architecture & context diagrams
-│   ├── backend/                  # Database schema, logical design
-│   └── ui/                       # UI component specs, pages
+├── docs/                          # Product documentation (38 files)
+│   ├── discovery/                 # Product discovery (vision, scope, roadmap)
+│   │   ├── executive-summary.md   # MVP hypothesis & outcome
+│   │   ├── product-vision.md      # Problem statement, principles
+│   │   ├── mvp-scope.md           # In/out of scope, user flows
+│   │   └── roadmap.md             # Phases 1–6, pilot validation
+│   ├── architecture/              # System design artifacts
+│   │   ├── contracts/             # Domain contracts
+│   │   │   ├── domain-ui.md       # Roles, pages, business rules
+│   │   │   └── appointment-lifecycle.md  # Status flow, triggers
+│   │   ├── system/                # C4 diagrams (context, container)
+│   │   ├── backend/               # SQL schema, RLS, triggers, seed
+│   │   └── ui/                    # UI component specs, pages
+│   ├── decisions/                 # Product decisions (PDR-001–PDR-005)
+│   ├── delivery/                  # Backlog & stories (12 epics, 28+ stories)
+│   └── screenshots/               # Visual assets
 │
 ├── app/                           # Frontend application (React)
 │   ├── src/
@@ -170,7 +173,7 @@ All projects follow rules defined in: **`E:\My files\0 My_Dev\external_repo\Clau
    - Disabled features show WHY they're disabled
 
 #### DOCUMENTATION_STRATEGY.md
-- **Language:** This project is bilingual-capable (English in master, Russian in docs-ru)
+- **Language:** English only. Russian documents archived to `docs/archive/` (gitignored)
 - **Structure:** `docs/discovery/` (architecture), `docs/delivery/` (user-facing)
 - **Tone:** Make definitive statements about what we control; use relative language for third-party tools
 - **Example hedging:** "tends to", "may", "worth trying" instead of "always", "never", "best"
@@ -212,11 +215,11 @@ npm run dev
 **Start here:** [README.md](README.md) → "Where to Start" section
 
 **Quick path for developers:**
-1. [Executive Summary](docs/0%20executive-summary.md) — 5 min
-2. [MVP Scope](docs/2%20mvp-scope.md) — understand user flows
-3. [Domain ↔ UI Contract](docs/contracts/domain-ui.md) — 15 business rules
+1. [Executive Summary](docs/discovery/executive-summary.md) — 5 min
+2. [MVP Scope](docs/discovery/mvp-scope.md) — understand user flows
+3. [Domain ↔ UI Contract](docs/architecture/contracts/domain-ui.md) — 15 business rules
 4. [Quick Start](app/QUICK-START.md) — run locally
-5. [Dev Plan](docs/delivery/dev-plan-en.md) — 11 epics, 28 stories
+5. [Dev Plan](docs/delivery/dev-plan.md) — 11 epics, 28 stories
 
 ### 3. Tech Notes
 - **Type generation:** `npm run gen:types` (syncs Supabase schema → TypeScript)
@@ -229,20 +232,20 @@ npm run dev
 ## 📋 Common Tasks
 
 ### When working on UI/UX
-1. Check `docs/ui/ui.pages.md` for page specs
-2. Check `docs/ui/ui.components.md` for component library
+1. Check `docs/architecture/ui/ui.pages.md` for page specs
+2. Check `docs/architecture/ui/ui.components.md` for component library
 3. Apply INTERACTION_RULES.md #2 (self-explaining UI)
 4. Test in Tailwind dark mode: `preview_resize` with `colorScheme: dark`
 
 ### When working on appointments
-1. Review `docs/contracts/appointment-lifecycle.md` — status flow is canonical
-2. Check database triggers in `docs/backend/schema.logical.md`
+1. Review `docs/architecture/contracts/appointment-lifecycle.md` — status flow is canonical
+2. Check database triggers in `docs/architecture/backend/schema.logical.md`
 3. Verify backend enforces rules, don't duplicate in UI
 4. Test edge cases: deactivation, archival, reassignment
 
 ### When adding a feature
 1. **Product first:** Update the relevant epic/story in `docs/delivery/`
-2. **Contract:** Update `docs/contracts/domain-ui.md` or appointment-lifecycle.md
+2. **Contract:** Update `docs/architecture/contracts/domain-ui.md` or appointment-lifecycle.md
 3. **Backend:** Add database constraints/triggers
 4. **Frontend:** Implement UI & validation
 5. **Test:** Verify in demo data scenario
@@ -322,14 +325,13 @@ npm run dev
 
 ## 📞 Questions?
 
-1. **Product questions?** → Review docs/0–3 (vision, scope, roadmap)
-2. **Architecture questions?** → See docs/system/ and docs/backend/
-3. **Feature definition?** → Check docs/delivery/backlog/
-4. **Session context?** → Read `docs/sessions/` (latest file)
+1. **Product questions?** → Review `docs/discovery/` (vision, scope, roadmap)
+2. **Architecture questions?** → See `docs/architecture/` (system, backend, contracts, ui)
+3. **Feature definition?** → Check `docs/delivery/backlog/`
+4. **Session context?** → Read `.claude/sessions/` (latest file)
 
-**Also check:** [Documentation Guide](docs/GUIDE.md) for full navigation across 36 files.
+**Also check:** [Documentation Guide](docs/GUIDE.md) for full navigation across 38 files.
 
 ---
 
-**Last updated:** 2026-04-10  
-**Next: Expand with session-specific memories as work progresses**
+**Last updated:** 2026-06-18
