@@ -9,7 +9,7 @@
 
 1. Create a new Supabase project (or use an existing one)
 2. Open **SQL Editor** in the Supabase Dashboard
-3. Copy the contents of `docs/backend/init-all.sql` (from project root) and execute it
+3. Copy the contents of `docs/architecture/backend/init-all.sql` (from project root) and execute it
    - This creates all tables, triggers, RLS policies, and the demo data function
 
 ## 2. Configure Environment
