@@ -88,6 +88,19 @@ Full navigation across all 36 documents: **[Documentation Guide](docs/GUIDE.md)*
 
 ---
 
+## Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| Frontend | React 19 + TypeScript + Vite |
+| Routing & State | TanStack Router + TanStack Query |
+| UI | Tailwind CSS + shadcn/ui |
+| Backend | Supabase (PostgreSQL + PostgREST) |
+| Auth | Supabase Auth (magic link) |
+| Deployment | Docker + Nginx |
+
+---
+
 ## Project Status
 
 **MVP complete — 28/28 stories implemented.**
